@@ -1,0 +1,19 @@
+* savefold.el
+
+This package is a family of global minor modes that persist folds made by
+various existing overlay-based folding systems, saving them to the disk and
+reapplying upon file open. Currently supported:
+
+- [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Outline-Mode.html][outline mode]]
+
+** Usage
+
+#+begin_src elisp
+(use-package savefold
+  :init
+  (setq savefold-backends '("outline"))  ;; default
+  (setq savefold-directory (locate-user-emacs-file "savefold"))  ;; default
+
+  :config
+  (savefold-mode 1))
+#+end_src
