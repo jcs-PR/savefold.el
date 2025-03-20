@@ -71,7 +71,7 @@ corresponding fold overlay.")
 
  ;; check mod time? how?
 (defun savefold-outline--recover-folds ()
-  "Read saved fold data for the current buffer's file and apply to the buffer."
+  "Read saved outline fold data for the current buffer's file and apply."
   (mapc
    (lambda (fold-data)
      (outline-flag-region (car fold-data) (cdr fold-data) t))
@@ -89,7 +89,7 @@ corresponding fold overlay.")
   :init-value nil
   (if savefold-outline-mode
       (progn
-        ;; Save folds existing folds
+        ;; Save existing folds
         (savefold-outline--save-all-existing-folds)
 
         ;; Recover folds upon file open
@@ -98,7 +98,6 @@ corresponding fold overlay.")
 
         ;; Wrap fold-making function
         (advice-add 'outline-flag-region :after 'savefold-outline--update-folds))
-
     (remove-hook 'outline-minor-mode 'savefold-outline--recover-folds)
     (remove-hook 'outline-minor-mode-hook 'savefold-outline--recover-folds)
     (advice-remove 'outline-flag-region 'savefold-outline--update-folds)))

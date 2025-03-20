@@ -40,30 +40,36 @@ See `savefold--all-backends' for a list of possible values.")
 (defcustom savefold-directory (locate-user-emacs-file "savefold")
   "Persist fold data to this directory.")
 
-(defvar savefold--all-backends '("outline")
+(defvar savefold--all-backends '("outline" "org")
   "List of supported folding backends.")
 
-(defun savefold--activate-backend (backend)
-  "Require and turn on the savefold minor mode for BACKEND."
+(defun savefold--enable-backends ()
+  "Require and turn on the savefold minor mode for all `savefold-backends'."
+  (mapc
+    (lambda (backend)
   (let ((feature (intern (format "savefold-%s" backend)))
         (minor-mode (intern (format "savefold-%s-mode" backend))))
     (require feature)
     (funcall minor-mode 1)))
+    savefold-backends))
 
-(defun savefold--deactivate-backend (backend)
-  "Deactivate savefold minor mode for BACKEND."
+(defun savefold--disable-backends ()
+  "Disable on the savefold minor mode for all `savefold-backends'."
+  (mapc
+    (lambda (backend)
   (let ((minor-mode (make-symbol (format "savefold-%s-mode" backend))))
     (funcall minor-mode -1)))
+    savefold-backends))
 
 ;;;###autoload
 (define-minor-mode savefold-mode
-  "Toggle global persistence for `savefold-backends'."
+  "Toggle global folding persistence for `savefold-backends'."
   :global t
   :init-value nil
   (if savefold-mode
       (progn
-        (mapc 'savefold--activate-backend savefold-backends))
-    (mapc 'savefold--deactivate-backend savefold-backends)))
+        (savefold--enable-backends))
+    (savefold--disable-backends)))
 
 (provide 'savefold)
 

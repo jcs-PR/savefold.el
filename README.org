@@ -5,6 +5,7 @@ various existing overlay-based folding systems, saving them to the disk and
 reapplying upon file open. Currently supported:
 
 - [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Outline-Mode.html][outline mode]]
+- [[https://orgmode.org/][org mode]] (only emacs 28/org 9.6 overlay folding, currently)
 
 ** Usage
 
