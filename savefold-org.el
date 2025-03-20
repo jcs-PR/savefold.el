@@ -54,6 +54,19 @@ arguments of `org-flag-region'.")
 
 (defvar savefold-org--org-fold-specs '(org-hide-block))
 
+(defun savefold-org--recover-folds ()
+  "Read and apply saved org fold data for the current buffer."
+  (when (and (not savefold-org-inhibit-outline-integration)
+             (not savefold-outline-mode))
+    (savefold-outline--recover-folds))
+  (mapc
+   (lambda (fold-data)
+     (org-flag-region (car fold-data) (cadr fold-data) t (caddr fold-data)))
+   (savefold-utils-get-file-attr 'savefold-org--folds)))
+
+(defun savefold-org--setup-save-on-kill-buffer ()
+  (add-hook 'kill-buffer-hook 'savefold-org--save-folds nil t))
+
 (defun savefold-org--org-foldp (ov)
   "Check whether the overlay is for an org-mode fold.
 
@@ -62,8 +75,11 @@ invisibility spec, but only the invisibility specs exclusive to org-mode:
 `savefold-org--org-fold-specs'."
   (memq (overlay-get ov 'invisible) savefold-org--org-fold-specs))
 
-(defun savefold-org--save-buffer-existing-folds ()
-  "Save org fold data for the current buffer's file."
+(defun savefold-org--save-folds ()
+  "Save org fold data for the current buffer."
+  (when (and (not savefold-org-inhibit-outline-integration)
+             (not savefold-outline-mode))
+    (savefold-outline--save-folds))
   (setq
    savefold-org--folds
    (mapcar
@@ -75,33 +91,14 @@ invisibility spec, but only the invisibility specs exclusive to org-mode:
                                 savefold-org--folds)
   (savefold-utils-write-out-file-attrs))
 
-(defun savefold-org--save-all-existing-folds ()
-  "Save fold data for all existing org buffers."
-  (when (and (not savefold-org-inhibit-outline-integration)
-             (not savefold-outline-mode))
-    (savefold-outline--save-all-existing-folds))
+(defun savefold-org--save-all-buffers-folds ()
+  "Save fold data across all org buffers."
   (mapc
    (lambda (buf)
      (with-current-buffer buf
        (when (derived-mode-p 'org-mode)
-         (savefold-org--save-buffer-existing-folds))))
+         (savefold-org--save-folds))))
    (buffer-list)))
-
-(defun savefold-org--recover-folds ()
-  "Read saved org fold data for the current buffer's file and apply."
-  (when (and (not savefold-org-inhibit-outline-integration)
-             (not savefold-outline-mode))
-    (savefold-outline--recover-folds))
-  (mapc
-   (lambda (fold-data)
-     (org-flag-region (car fold-data) (cadr fold-data) t (caddr fold-data)))
-   (savefold-utils-get-file-attr 'savefold-org--folds)))
-
-(defun savefold-org--update-folds (&rest _)
-  "Advise `org-flag-region' to save fold changes in the current buffer."
-  (when (not savefold-org-inhibit-outline-integration)
-    (savefold-outline--update-folds))
-  (savefold-org--save-buffer-existing-folds))
 
 (define-minor-mode savefold-org-mode
   "Toggle global persistence for org-mode folds."
@@ -112,13 +109,13 @@ invisibility spec, but only the invisibility specs exclusive to org-mode:
         ;; Recover folds upon file open
         (add-hook 'org-mode-hook 'savefold-org--recover-folds)
 
-        ;; Wrap folding function
-        (advice-add 'org-flag-region :after 'savefold-org--update-folds)
+        ;; Save folds on file close
+        (add-hook 'org-mode-hook 'savefold-org--setup-save-on-kill-buffer)
 
         ;; Save existing folds
-        (savefold-org--save-all-existing-folds))
+        (savefold-org--save-all-buffers-folds))
     (remove-hook 'org-mode-hook 'savefold-org--recover-folds)
-    (advice-remove 'org-flag-region 'savefold-org--update-folds)))
+    (remove-hook 'org-mode-hook 'savefold-org--setup-save-on-kill-buffer)))
 
 (provide 'savefold-org)
 

@@ -41,12 +41,23 @@
 It's a list of pairs (start . end) for the start and end points of the
 corresponding fold overlay.")
 
+ ;; check mod time
+(defun savefold-outline--recover-folds ()
+  "Read and apply saved outline fold data for the current buffer."
+  (mapc
+   (lambda (fold-data)
+     (outline-flag-region (car fold-data) (cdr fold-data) t))
+   (savefold-utils-get-file-attr 'savefold-outline--folds)))
+
+(defun savefold-outline--setup-save-on-kill-buffer ()
+  (add-hook 'kill-buffer-hook 'savefold-outline--save-folds nil t))
+
 (defun savefold-outline--outline-foldp (ov)
   "Checks whether OV is an outline-mode/outline-minor-mode fold overlay."
   (eq (overlay-get ov 'invisible) 'outline))
 
-(defun savefold-outline--save-buffer-existing-folds ()
-  "Save outline fold data for the current buffer's file."
+(defun savefold-outline--save-folds ()
+  "Save outline fold data for the current buffer."
   (setq savefold-outline--folds '())
   (mapc
    (lambda (ov)
@@ -59,28 +70,15 @@ corresponding fold overlay.")
                                 savefold-outline--folds)
   (savefold-utils-write-out-file-attrs))
 
-(defun savefold-outline--save-all-existing-folds ()
-  "Save fold data for all outline-mode/outline-minor-mode buffers."
+(defun savefold-outline--save-all-buffers-folds ()
+  "Save fold data across all outline-mode/outline-minor-mode buffers."
   (mapc
    (lambda (buf)
      (with-current-buffer buf
        (when (or (derived-mode-p 'outline-mode)
                  (bound-and-true-p outline-minor-mode))
-         (savefold-outline--save-buffer-existing-folds))))
+         (savefold-outline--save-folds))))
    (buffer-list)))
-
- ;; check mod time? how?
-(defun savefold-outline--recover-folds ()
-  "Read saved outline fold data for the current buffer's file and apply."
-  (mapc
-   (lambda (fold-data)
-     (outline-flag-region (car fold-data) (cdr fold-data) t))
-   (savefold-utils-get-file-attr 'savefold-outline--folds)))
-
- ;; can be done more efficiently
-(defun savefold-outline--update-folds (&rest _)
-  "Advise `outline-flag-region' to save fold changes in the current buffer."
-  (savefold-outline--save-buffer-existing-folds))
 
 ;;;###autoload
 (define-minor-mode savefold-outline-mode
@@ -89,18 +87,20 @@ corresponding fold overlay.")
   :init-value nil
   (if savefold-outline-mode
       (progn
-        ;; Save existing folds
-        (savefold-outline--save-all-existing-folds)
-
         ;; Recover folds upon file open
         (add-hook 'outline-mode-hook 'savefold-outline--recover-folds)
         (add-hook 'outline-minor-mode-hook 'savefold-outline--recover-folds)
 
-        ;; Wrap fold-making function
-        (advice-add 'outline-flag-region :after 'savefold-outline--update-folds))
+        ;; Save folds on file close
+        (add-hook 'outline-mode-hook 'savefold-outline--setup-save-on-kill-buffer)
+        (add-hook 'outline-minor-mode-hook 'savefold-outline--setup-save-on-kill-buffer)
+
+        ;; Save existing folds
+        (savefold-outline--save-all-buffers-folds))
     (remove-hook 'outline-minor-mode 'savefold-outline--recover-folds)
     (remove-hook 'outline-minor-mode-hook 'savefold-outline--recover-folds)
-    (advice-remove 'outline-flag-region 'savefold-outline--update-folds)))
+    (remove-hook 'outline-mode-hook 'savefold-outline--setup-save-on-kill-buffer)
+    (remove-hook 'outline-minor-mode-hook 'savefold-outline--setup-save-on-kill-buffer)))
 
 (provide 'savefold-outline)
 
