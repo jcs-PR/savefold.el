@@ -44,7 +44,9 @@ outline-mode.
 
 A value of nil is required for folds created with `org-flag-region' with an
 'outline invisibility spec to be saved, for example. There is not really any
-reason for this to be non-nil.")
+reason for this to be non-nil."
+  :type 'boolean
+  :group 'savefold)
 
 (defvar-local savefold-org--folds '()
   "A list of org mode fold data for the current buffer's file.

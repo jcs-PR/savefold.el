@@ -32,13 +32,21 @@
 
 ;;; Code:
 
+(defgroup savefold nil
+  "Custom group for savefold."
+  :group 'convenience)
+
 (defcustom savefold-backends '("outline")
   "List of folding backends to persist with savefold-mode.
 
-See `savefold--all-backends' for a list of possible values.")
+See `savefold--all-backends' for a list of possible values."
+  :type '(repeat string)
+  :group 'savefold)
 
 (defcustom savefold-directory (locate-user-emacs-file "savefold")
-  "Persist fold data to this directory.")
+  "Persist fold data to this directory."
+  :type 'directory
+  :group 'savefold)
 
 (defvar savefold--all-backends '("outline" "org")
   "List of supported folding backends.")
