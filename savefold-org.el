@@ -48,7 +48,7 @@ reason for this to be non-nil."
   :type 'boolean
   :group 'savefold)
 
-(defvar savefold-org--org-fold-specs '(org-hide-block))
+(defvar savefold-org--org-fold-specs '(org-hide-block org-babel-hide-result))
 
 (defvar savefold-org--folds-attr 'savefold-org-folds)
 
@@ -61,7 +61,15 @@ reason for this to be non-nil."
           (savefold-outline--recover-folds))
         (mapc
          (lambda (fold-data)
-           (org-flag-region (car fold-data) (cadr fold-data) t (caddr fold-data)))
+           (let ((start (car fold-data))
+                 (end (cadr fold-data))
+                 (spec (caddr fold-data)))
+             (cond
+              ((eq spec 'org-babel-hide-result)
+               (save-excursion
+                 (goto-char start)
+                 (org-babel-hide-result-toggle-maybe)))
+              (t (org-flag-region start end t spec)))))
          (savefold-utils-get-file-attr savefold-org--folds-attr)))
     (message
      "savefold: Buffer contents newer than fold data for buffer '%s'. Not applying."
