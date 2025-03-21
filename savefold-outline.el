@@ -37,6 +37,17 @@
 
 (defvar savefold-outline--folds-attr 'savefold-outline-folds)
 
+ ;; Some of this logic is redundant across backends...
+(defun savefold-outline--mapc-buffers (fun)
+  "Over all outline buffers, call FUN with `with-current-buffer'."
+  (mapc
+   (lambda (buf)
+     (with-current-buffer buf
+       (when (or (derived-mode-p 'outline-mode)
+                 (bound-and-true-p outline-minor-mode))
+         (funcall fun))))
+   (buffer-list)))
+
 (defun savefold-outline--recover-folds ()
   "Read and apply saved outline fold data for the current buffer."
   ;; Maybe find away to abstract out this recency check
@@ -75,25 +86,17 @@ This also saves the modification time of the file."
     (savefold-utils-set-file-attr-modtime)
     (savefold-utils-write-out-file-attrs)))
 
+(defun savefold-outline--save-all-buffers-folds ()
+  "Save outline fold data for all buffers."
+  (savefold-org--mapc-buffers 'savefold-outline--save-folds))
+
 (defun savefold-outline--setup-save-on-kill-for-existing-buffers ()
   "Setup save on kill across all existing outline buffers."
-  (mapc
-   (lambda (buf)
-     (with-current-buffer buf
-       (when (or (derived-mode-p 'outline-mode)
-                 (bound-and-true-p outline-minor-mode))
-         (savefold-outline--setup-save-on-kill-buffer))))
-   (buffer-list)))
+  (savefold-outline--mapc-buffers 'savefold-outline--setup-save-on-kill-buffer))
 
 (defun savefold-outline--unhook-save-on-kill-for-existing-buffers ()
   "Remove the save on kill hook across all existing outline buffers."
-  (mapc
-   (lambda (buf)
-     (with-current-buffer buf
-       (when (or (derived-mode-p 'outline-mode)
-                 (bound-and-true-p outline-minor-mode))
-         (savefold-outline--unhook-save-on-kill-buffer))))
-   (buffer-list)))
+  (savefold-outline--mapc-buffers 'savefold-outline--unhook-save-on-kill-buffer))
 
 ;;;###autoload
 (define-minor-mode savefold-outline-mode
@@ -109,6 +112,7 @@ This also saves the modification time of the file."
         ;; Save folds on file close
         (add-hook 'outline-mode-hook 'savefold-outline--setup-save-on-kill-buffer)
         (add-hook 'outline-minor-mode-hook 'savefold-outline--setup-save-on-kill-buffer)
+        (add-hook 'kill-emacs-hook 'savefold-outline--save-all-buffers-folds)
 
         ;; Set up save folds on existing buffers
         (savefold-outline--setup-save-on-kill-for-existing-buffers))
@@ -118,6 +122,7 @@ This also saves the modification time of the file."
 
     (remove-hook 'outline-mode-hook 'savefold-outline--setup-save-on-kill-buffer)
     (remove-hook 'outline-minor-mode-hook 'savefold-outline--setup-save-on-kill-buffer)
+    (remove-hook 'kill-emacs-hook 'savefold-outline--save-all-buffers-folds)
 
     (savefold-outline--unhook-save-on-kill-for-existing-buffers)))
 

@@ -52,6 +52,15 @@ reason for this to be non-nil."
 
 (defvar savefold-org--folds-attr 'savefold-org-folds)
 
+(defun savefold-org--mapc-buffers (fun)
+  "Over all org buffers, call FUN with `with-current-buffer'."
+  (mapc
+   (lambda (buf)
+     (with-current-buffer buf
+       (when (derived-mode-p 'org-mode)
+         (funcall fun))))
+   (buffer-list)))
+
 (defun savefold-org--recover-folds ()
   "Read and apply saved org fold data for the current buffer."
   (if (not (savefold-utils-file-recently-modifiedp))
@@ -105,23 +114,17 @@ invisibility spec, but only the invisibility specs exclusive to org-mode:
     (savefold-utils-set-file-attr-modtime)
     (savefold-utils-write-out-file-attrs)))
 
+(defun savefold-org--save-all-buffers-folds ()
+  "Save org fold data for all buffers."
+  (savefold-org--mapc-buffers 'savefold-org--save-folds))
+
 (defun savefold-org--setup-save-on-kill-for-existing-buffers ()
   "Set up save on kill across all existing org buffers."
-  (mapc
-   (lambda (buf)
-     (with-current-buffer buf
-       (when (derived-mode-p 'org-mode)
-         (savefold-org--setup-save-on-kill-buffer))))
-   (buffer-list)))
+  (savefold-org--mapc-buffers 'savefold-org--setup-save-on-kill-buffer))
 
 (defun savefold-org--unhook-save-on-kill-for-existing-buffers ()
   "Remove the save on kill hook across all existing org buffers."
-  (mapc
-   (lambda (buf)
-     (with-current-buffer buf
-       (when (derived-mode-p 'org-mode)
-         (savefold-org--unhook-save-on-kill-buffer))))
-   (buffer-list)))
+  (savefold-org--mapc-buffers 'savefold-org--unhook-save-on-kill-buffer))
 
 (define-minor-mode savefold-org-mode
   "Toggle global persistence for org-mode folds."
@@ -134,6 +137,7 @@ invisibility spec, but only the invisibility specs exclusive to org-mode:
 
         ;; Save folds on file close
         (add-hook 'org-mode-hook 'savefold-org--setup-save-on-kill-buffer)
+        (add-hook 'kill-emacs-hook 'savefold-org--save-all-buffers-folds)
 
         ;; Set up save folds on existing buffers
         (savefold-org--setup-save-on-kill-for-existing-buffers))
@@ -141,6 +145,7 @@ invisibility spec, but only the invisibility specs exclusive to org-mode:
     (remove-hook 'org-mode-hook 'savefold-org--recover-folds)
 
     (remove-hook 'org-mode-hook 'savefold-org--setup-save-on-kill-buffer)
+    (remove-hook 'kill-emacs-hook 'savefold-org--save-all-buffers-folds)
 
     (savefold-org--unhook-save-on-kill-for-existing-buffers)))
 
