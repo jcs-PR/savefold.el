@@ -48,23 +48,24 @@ reason for this to be non-nil."
   :type 'boolean
   :group 'savefold)
 
-(defvar-local savefold-org--folds '()
-  "A list of org mode fold data for the current buffer's file.
-
-A list of lists (start end spec) for each org fold overlay, corresponding to the
-arguments of `org-flag-region'.")
-
 (defvar savefold-org--org-fold-specs '(org-hide-block))
+
+(defvar savefold-org--folds-attr 'savefold-org-folds)
 
 (defun savefold-org--recover-folds ()
   "Read and apply saved org fold data for the current buffer."
-  (when (and (not savefold-org-inhibit-outline-integration)
-             (not savefold-outline-mode))
-    (savefold-outline--recover-folds))
-  (mapc
-   (lambda (fold-data)
-     (org-flag-region (car fold-data) (cadr fold-data) t (caddr fold-data)))
-   (savefold-utils-get-file-attr 'savefold-org--folds)))
+  (if (not (savefold-utils-file-recently-modifiedp))
+      (progn
+        (when (and (not savefold-org-inhibit-outline-integration)
+                   (not savefold-outline-mode))
+          (savefold-outline--recover-folds))
+        (mapc
+         (lambda (fold-data)
+           (org-flag-region (car fold-data) (cadr fold-data) t (caddr fold-data)))
+         (savefold-utils-get-file-attr savefold-org--folds-attr)))
+    (message
+     "savefold: Buffer contents newer than fold data for buffer '%s'. Not applying."
+     (current-buffer))))
 
 (defun savefold-org--setup-save-on-kill-buffer ()
   (add-hook 'kill-buffer-hook 'savefold-org--save-folds nil t))
@@ -79,19 +80,19 @@ invisibility spec, but only the invisibility specs exclusive to org-mode:
 
 (defun savefold-org--save-folds ()
   "Save org fold data for the current buffer."
-  (when (and (not savefold-org-inhibit-outline-integration)
-             (not savefold-outline-mode))
-    (savefold-outline--save-folds))
-  (setq
-   savefold-org--folds
-   (mapcar
-    (lambda (ov)
-      `(,(overlay-start ov) ,(overlay-end ov) ,(overlay-get ov 'invisible)))
-    (seq-filter 'savefold-org--org-foldp
-                (overlays-in (point-min) (point-max)))))
-  (savefold-utils-set-file-attr 'savefold-org--folds
-                                savefold-org--folds)
-  (savefold-utils-write-out-file-attrs))
+  (when (not (buffer-modified-p))
+    (when (and (not savefold-org-inhibit-outline-integration)
+               (not savefold-outline-mode))
+      (savefold-outline--save-folds))
+    (savefold-utils-set-file-attr
+     savefold-org--folds-attr
+     (mapcar
+      (lambda (ov)
+        `(,(overlay-start ov) ,(overlay-end ov) ,(overlay-get ov 'invisible)))
+      (seq-filter 'savefold-org--org-foldp
+                  (overlays-in (point-min) (point-max)))))
+    (savefold-utils-set-file-attr-modtime)
+    (savefold-utils-write-out-file-attrs)))
 
 (defun savefold-org--save-all-buffers-folds ()
   "Save fold data across all org buffers."

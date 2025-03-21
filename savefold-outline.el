@@ -35,19 +35,19 @@
 (require 'outline)
 (require 'savefold-utils)
 
-(defvar-local savefold-outline--folds '()
-  "A list containing data for each outline fold in the current buffer.
+(defvar savefold-outline--folds-attr 'savefold-outline-folds)
 
-It's a list of pairs (start . end) for the start and end points of the
-corresponding fold overlay.")
-
- ;; check mod time
 (defun savefold-outline--recover-folds ()
   "Read and apply saved outline fold data for the current buffer."
-  (mapc
-   (lambda (fold-data)
-     (outline-flag-region (car fold-data) (cdr fold-data) t))
-   (savefold-utils-get-file-attr 'savefold-outline--folds)))
+  ;; Maybe find away to abstract out this recency check
+  (if (not (savefold-utils-file-recently-modifiedp))
+      (mapc
+       (lambda (fold-data)
+         (outline-flag-region (car fold-data) (cadr fold-data) t))
+       (savefold-utils-get-file-attr savefold-outline--folds-attr))
+    (message
+     "savefold: Buffer contents newer than fold data for buffer '%s'. Not applying."
+     (current-buffer))))
 
 (defun savefold-outline--setup-save-on-kill-buffer ()
   (add-hook 'kill-buffer-hook 'savefold-outline--save-folds nil t))
@@ -57,18 +57,20 @@ corresponding fold overlay.")
   (eq (overlay-get ov 'invisible) 'outline))
 
 (defun savefold-outline--save-folds ()
-  "Save outline fold data for the current buffer."
-  (setq savefold-outline--folds '())
-  (mapc
-   (lambda (ov)
-     (when (savefold-outline--outline-foldp ov)
-       (add-to-list 'savefold-outline--folds
-                    `(,(overlay-start ov) . ,(overlay-end ov)))))
-   ;; overlays-in does not necessarily return overlays in order
-   (overlays-in (point-min) (point-max)))
-  (savefold-utils-set-file-attr 'savefold-outline--folds
-                                savefold-outline--folds)
-  (savefold-utils-write-out-file-attrs))
+  "Save outline fold data for the current buffer.
+
+This also saves the modification time of the file."
+  ;; Assume this means the buffer reflects the actual file state
+  (when (not (buffer-modified-p))
+    (savefold-utils-set-file-attr
+     savefold-outline--folds-attr
+     (mapcar
+      (lambda (ov) `(,(overlay-start ov) ,(overlay-end ov)))
+      (seq-filter 'savefold-outline--outline-foldp
+                  ;; overlays-in does not necessarily return overlays in order
+                  (overlays-in (point-min) (point-max)))))
+    (savefold-utils-set-file-attr-modtime)
+    (savefold-utils-write-out-file-attrs)))
 
 (defun savefold-outline--save-all-buffers-folds ()
   "Save fold data across all outline-mode/outline-minor-mode buffers."

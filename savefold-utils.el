@@ -79,7 +79,7 @@ Use FPATH instead of the current buffer file if non-nil."
                         (and (buffer-file-name) (expand-file-name (buffer-file-name))))))
     (if (readablep value)
         (puthash attr value (savefold-utils--get-file-attr-table fpath))
-      (error "file attr value must be readable"))))
+      (error "savefold: File attr value must be readablep."))))
 
 (defun savefold-utils-write-out-file-attrs (&optional fpath)
   "Write attr hash table for the current file to the disk.
@@ -93,6 +93,19 @@ Use FPATH instead if non-nil."
       (prin1
        (gethash fpath savefold-utils--fpath-to-attr-table)
        (current-buffer)))))
+
+(defun savefold-utils-set-file-attr-modtime ()
+  "Set the current file's modtime as a file attribute.
+
+Must `savefold-utils-write-out-file-attrs' afterwards."
+  (savefold-utils-set-file-attr 'savefold-modtime (visited-file-modtime)))
+
+(defun savefold-utils-file-recently-modifiedp ()
+  "The current file has modtime recenter than the 'savefold-modtime attr.
+
+False if the current file doesn't have a 'savefold-modtime attr."
+  (when-let ((saved-modtime (savefold-utils-get-file-attr 'savefold-modtime)))
+    (< (float-time saved-modtime) (float-time (visited-file-modtime)))))
 
 (provide 'savefold-utils)
 
