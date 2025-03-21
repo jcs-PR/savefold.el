@@ -54,20 +54,20 @@ See `savefold--all-backends' for a list of possible values."
 (defun savefold--enable-backends ()
   "Require and turn on the savefold minor mode for all `savefold-backends'."
   (mapc
-    (lambda (backend)
-  (let ((feature (intern (format "savefold-%s" backend)))
-        (minor-mode (intern (format "savefold-%s-mode" backend))))
-    (require feature)
-    (funcall minor-mode 1)))
-    savefold-backends))
+   (lambda (backend)
+     (let ((feature (intern (format "savefold-%s" backend)))
+           (minor-mode (intern (format "savefold-%s-mode" backend))))
+       (require feature)
+       (funcall minor-mode 1)))
+   savefold-backends))
 
 (defun savefold--disable-backends ()
   "Disable on the savefold minor mode for all `savefold-backends'."
   (mapc
-    (lambda (backend)
-  (let ((minor-mode (make-symbol (format "savefold-%s-mode" backend))))
-    (funcall minor-mode -1)))
-    savefold-backends))
+   (lambda (backend)
+     (let ((minor-mode (intern (format "savefold-%s-mode" backend))))
+       (funcall minor-mode -1)))
+   savefold-backends))
 
 ;;;###autoload
 (define-minor-mode savefold-mode

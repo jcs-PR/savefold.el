@@ -70,6 +70,9 @@ reason for this to be non-nil."
 (defun savefold-org--setup-save-on-kill-buffer ()
   (add-hook 'kill-buffer-hook 'savefold-org--save-folds nil t))
 
+(defun savefold-org--unhook-save-on-kill-buffer ()
+  (remove-hook 'kill-buffer-hook 'savefold-org--save-folds t))
+
 (defun savefold-org--org-foldp (ov)
   "Check whether the overlay is for an org-mode fold.
 
@@ -94,13 +97,22 @@ invisibility spec, but only the invisibility specs exclusive to org-mode:
     (savefold-utils-set-file-attr-modtime)
     (savefold-utils-write-out-file-attrs)))
 
-(defun savefold-org--save-all-buffers-folds ()
-  "Save fold data across all org buffers."
+(defun savefold-org--setup-save-on-kill-for-existing-buffers ()
+  "Set up save on kill across all existing org buffers."
   (mapc
    (lambda (buf)
      (with-current-buffer buf
        (when (derived-mode-p 'org-mode)
-         (savefold-org--save-folds))))
+         (savefold-org--setup-save-on-kill-buffer))))
+   (buffer-list)))
+
+(defun savefold-org--unhook-save-on-kill-for-existing-buffers ()
+  "Remove the save on kill hook across all existing org buffers."
+  (mapc
+   (lambda (buf)
+     (with-current-buffer buf
+       (when (derived-mode-p 'org-mode)
+         (savefold-org--unhook-save-on-kill-buffer))))
    (buffer-list)))
 
 (define-minor-mode savefold-org-mode
@@ -115,10 +127,14 @@ invisibility spec, but only the invisibility specs exclusive to org-mode:
         ;; Save folds on file close
         (add-hook 'org-mode-hook 'savefold-org--setup-save-on-kill-buffer)
 
-        ;; Save existing folds
-        (savefold-org--save-all-buffers-folds))
+        ;; Set up save folds on existing buffers
+        (savefold-org--setup-save-on-kill-for-existing-buffers))
+
     (remove-hook 'org-mode-hook 'savefold-org--recover-folds)
-    (remove-hook 'org-mode-hook 'savefold-org--setup-save-on-kill-buffer)))
+
+    (remove-hook 'org-mode-hook 'savefold-org--setup-save-on-kill-buffer)
+
+    (savefold-org--unhook-save-on-kill-for-existing-buffers)))
 
 (provide 'savefold-org)
 

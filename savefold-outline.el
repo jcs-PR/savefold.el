@@ -52,6 +52,9 @@
 (defun savefold-outline--setup-save-on-kill-buffer ()
   (add-hook 'kill-buffer-hook 'savefold-outline--save-folds nil t))
 
+(defun savefold-outline--unhook-save-on-kill-buffer ()
+  (remove-hook 'kill-buffer-hook 'savefold-outline--save-folds t))
+
 (defun savefold-outline--outline-foldp (ov)
   "Checks whether OV is an outline-mode/outline-minor-mode fold overlay."
   (eq (overlay-get ov 'invisible) 'outline))
@@ -72,14 +75,24 @@ This also saves the modification time of the file."
     (savefold-utils-set-file-attr-modtime)
     (savefold-utils-write-out-file-attrs)))
 
-(defun savefold-outline--save-all-buffers-folds ()
-  "Save fold data across all outline-mode/outline-minor-mode buffers."
+(defun savefold-outline--setup-save-on-kill-for-existing-buffers ()
+  "Setup save on kill across all existing outline buffers."
   (mapc
    (lambda (buf)
      (with-current-buffer buf
        (when (or (derived-mode-p 'outline-mode)
                  (bound-and-true-p outline-minor-mode))
-         (savefold-outline--save-folds))))
+         (savefold-outline--setup-save-on-kill-buffer))))
+   (buffer-list)))
+
+(defun savefold-outline--unhook-save-on-kill-for-existing-buffers ()
+  "Remove the save on kill hook across all existing outline buffers."
+  (mapc
+   (lambda (buf)
+     (with-current-buffer buf
+       (when (or (derived-mode-p 'outline-mode)
+                 (bound-and-true-p outline-minor-mode))
+         (savefold-outline--unhook-save-on-kill-buffer))))
    (buffer-list)))
 
 ;;;###autoload
@@ -97,12 +110,16 @@ This also saves the modification time of the file."
         (add-hook 'outline-mode-hook 'savefold-outline--setup-save-on-kill-buffer)
         (add-hook 'outline-minor-mode-hook 'savefold-outline--setup-save-on-kill-buffer)
 
-        ;; Save existing folds
-        (savefold-outline--save-all-buffers-folds))
-    (remove-hook 'outline-minor-mode 'savefold-outline--recover-folds)
+        ;; Set up save folds on existing buffers
+        (savefold-outline--setup-save-on-kill-for-existing-buffers))
+
+    (remove-hook 'outline-mode-hook 'savefold-outline--recover-folds)
     (remove-hook 'outline-minor-mode-hook 'savefold-outline--recover-folds)
+
     (remove-hook 'outline-mode-hook 'savefold-outline--setup-save-on-kill-buffer)
-    (remove-hook 'outline-minor-mode-hook 'savefold-outline--setup-save-on-kill-buffer)))
+    (remove-hook 'outline-minor-mode-hook 'savefold-outline--setup-save-on-kill-buffer)
+
+    (savefold-outline--unhook-save-on-kill-for-existing-buffers)))
 
 (provide 'savefold-outline)
 
