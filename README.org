@@ -18,3 +18,8 @@ reapplying upon file open. Currently supported:
   :config
   (savefold-mode 1))
 #+end_src
+
+Notes:
+
+- Setting ~org-startup-folded~ to nil or ~'showeverything~ is recommended for
+  proper org support.
