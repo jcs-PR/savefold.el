@@ -4,8 +4,8 @@ This package is a family of global minor modes that persist folds made by
 various existing overlay-based folding systems, saving them to the disk and
 reapplying upon file open. Currently supported:
 
-- [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Outline-Mode.html][outline mode]]
-- [[https://orgmode.org/][org mode]] (only emacs 28/org 9.6 overlay folding, currently)
+- [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Outline-Mode.html][outline-mode]]/[[https://www.gnu.org/software/emacs/manual/html_node/emacs/Outline-Minor-Mode.html][outline-minor-mode]]
+- [[https://orgmode.org/][org-mode]] (only emacs 28/org 9.6 overlay folding, currently)
 
 ** Usage
 
