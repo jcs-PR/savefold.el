@@ -48,7 +48,7 @@ See `savefold--all-backends' for a list of possible values."
   :type 'directory
   :group 'savefold)
 
-(defvar savefold--all-backends '("outline" "org")
+(defvar savefold--all-backends '("outline" "org" "origami")
   "List of supported folding backends.")
 
 (defun savefold--enable-backends ()
