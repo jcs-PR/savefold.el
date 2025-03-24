@@ -94,7 +94,6 @@ This also saves the modification time of the file."
   (savefold-utils--mapc-buffers 'savefold-outline--outline-bufferp
                                 'savefold-outline--unhook-save-on-kill-buffer))
 
-;;;###autoload
 (define-minor-mode savefold-outline-mode
   "Toggle global persistence for outline-mode/outline-minor-mode folds."
   :global t
