@@ -3,7 +3,7 @@
 ;; Copyright (C) 2025 Jacob Fong
 ;; Author: Jacob Fong <jacobcfong@gmail.com>
 ;; Version: 0.1
-;; Homepage:
+;; Homepage: https://github.com/jcfk/savefold.el
 
 ;; Package-Requires: ((emacs "28.2"))
 
