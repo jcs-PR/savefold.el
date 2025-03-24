@@ -36,11 +36,11 @@
   "Custom group for savefold."
   :group 'convenience)
 
-(defcustom savefold-backends '("outline")
+(defcustom savefold-backends '(outline)
   "List of folding backends to persist with savefold-mode.
 
 See `savefold--all-backends' for a list of possible values."
-  :type '(repeat string)
+  :type '(repeat symbol)
   :group 'savefold)
 
 (defcustom savefold-directory (locate-user-emacs-file "savefold")
@@ -48,15 +48,16 @@ See `savefold--all-backends' for a list of possible values."
   :type 'directory
   :group 'savefold)
 
-(defvar savefold--all-backends '("outline" "org" "origami")
+(defvar savefold--all-backends '(outline org origami)
   "List of supported folding backends.")
 
 (defun savefold--enable-backends ()
   "Require and turn on the savefold minor mode for all `savefold-backends'."
   (mapc
    (lambda (backend)
-     (let ((feature (intern (format "savefold-%s" backend)))
-           (minor-mode (intern (format "savefold-%s-mode" backend))))
+     (let* ((backend-name (symbol-name backend))
+            (feature (intern (format "savefold-%s" backend-name)))
+            (minor-mode (intern (format "savefold-%s-mode" backend-name))))
        (require feature)
        (funcall minor-mode 1)))
    savefold-backends))
@@ -65,7 +66,8 @@ See `savefold--all-backends' for a list of possible values."
   "Disable on the savefold minor mode for all `savefold-backends'."
   (mapc
    (lambda (backend)
-     (let ((minor-mode (intern (format "savefold-%s-mode" backend))))
+     (let* ((backend-name (symbol-name backend))
+            (minor-mode (intern (format "savefold-%s-mode" backend-name))))
        (funcall minor-mode -1)))
    savefold-backends))
 

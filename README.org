@@ -13,7 +13,7 @@ reapplying upon file open. Currently supported:
 #+begin_src elisp
 (use-package savefold
   :init
-  (setq savefold-backends '("outline" "org" "origami"))
+  (setq savefold-backends '(outline org origami))
   (setq savefold-directory (locate-user-emacs-file "savefold"))  ;; default
 
   :config
