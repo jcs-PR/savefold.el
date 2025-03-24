@@ -37,17 +37,6 @@
 
 (defvar savefold-outline--folds-attr 'savefold-outline-folds)
 
- ;; Some of this logic is redundant across backends...
-(defun savefold-outline--mapc-buffers (fun)
-  "Over all outline buffers, call FUN with `with-current-buffer'."
-  (mapc
-   (lambda (buf)
-     (with-current-buffer buf
-       (when (or (derived-mode-p 'outline-mode)
-                 (bound-and-true-p outline-minor-mode))
-         (funcall fun))))
-   (buffer-list)))
-
 (defun savefold-outline--recover-folds ()
   "Read and apply saved outline fold data for the current buffer."
   ;; Maybe find away to abstract out this recency check
@@ -59,12 +48,6 @@
     (message
      "savefold: Buffer contents newer than fold data for buffer '%s'. Not applying."
      (current-buffer))))
-
-(defun savefold-outline--setup-save-on-kill-buffer ()
-  (add-hook 'kill-buffer-hook 'savefold-outline--save-folds nil t))
-
-(defun savefold-outline--unhook-save-on-kill-buffer ()
-  (remove-hook 'kill-buffer-hook 'savefold-outline--save-folds t))
 
 (defun savefold-outline--outline-foldp (ov)
   "Checks whether OV is an outline-mode/outline-minor-mode fold overlay."
@@ -86,13 +69,30 @@ This also saves the modification time of the file."
     (savefold-utils-set-file-attr-modtime)
     (savefold-utils-write-out-file-attrs)))
 
+(defun savefold-outline--set-up-save-on-kill-buffer ()
+  (add-hook 'kill-buffer-hook 'savefold-outline--save-folds nil t))
+
+ ;; Some of this logic is redundant across backends...
+(defun savefold-outline--mapc-buffers (fun)
+  "Over all outline buffers, call FUN with `with-current-buffer'."
+  (mapc
+   (lambda (buf)
+     (with-current-buffer buf
+       (when (or (derived-mode-p 'outline-mode)
+                 (bound-and-true-p outline-minor-mode))
+         (funcall fun))))
+   (buffer-list)))
+
 (defun savefold-outline--save-all-buffers-folds ()
   "Save outline fold data for all buffers."
   (savefold-org--mapc-buffers 'savefold-outline--save-folds))
 
-(defun savefold-outline--setup-save-on-kill-for-existing-buffers ()
-  "Setup save on kill across all existing outline buffers."
-  (savefold-outline--mapc-buffers 'savefold-outline--setup-save-on-kill-buffer))
+(defun savefold-outline--set-up-save-on-kill-for-existing-buffers ()
+  "Set up save on kill across all existing outline buffers."
+  (savefold-outline--mapc-buffers 'savefold-outline--set-up-save-on-kill-buffer))
+
+(defun savefold-outline--unhook-save-on-kill-buffer ()
+  (remove-hook 'kill-buffer-hook 'savefold-outline--save-folds t))
 
 (defun savefold-outline--unhook-save-on-kill-for-existing-buffers ()
   "Remove the save on kill hook across all existing outline buffers."
@@ -110,18 +110,18 @@ This also saves the modification time of the file."
         (add-hook 'outline-minor-mode-hook 'savefold-outline--recover-folds)
 
         ;; Save folds on file close
-        (add-hook 'outline-mode-hook 'savefold-outline--setup-save-on-kill-buffer)
-        (add-hook 'outline-minor-mode-hook 'savefold-outline--setup-save-on-kill-buffer)
+        (add-hook 'outline-mode-hook 'savefold-outline--set-up-save-on-kill-buffer)
+        (add-hook 'outline-minor-mode-hook 'savefold-outline--set-up-save-on-kill-buffer)
         (add-hook 'kill-emacs-hook 'savefold-outline--save-all-buffers-folds)
 
         ;; Set up save folds on existing buffers
-        (savefold-outline--setup-save-on-kill-for-existing-buffers))
+        (savefold-outline--set-up-save-on-kill-for-existing-buffers))
 
     (remove-hook 'outline-mode-hook 'savefold-outline--recover-folds)
     (remove-hook 'outline-minor-mode-hook 'savefold-outline--recover-folds)
 
-    (remove-hook 'outline-mode-hook 'savefold-outline--setup-save-on-kill-buffer)
-    (remove-hook 'outline-minor-mode-hook 'savefold-outline--setup-save-on-kill-buffer)
+    (remove-hook 'outline-mode-hook 'savefold-outline--set-up-save-on-kill-buffer)
+    (remove-hook 'outline-minor-mode-hook 'savefold-outline--set-up-save-on-kill-buffer)
     (remove-hook 'kill-emacs-hook 'savefold-outline--save-all-buffers-folds)
 
     (savefold-outline--unhook-save-on-kill-for-existing-buffers)))

@@ -52,15 +52,6 @@ reason for this to be non-nil."
 
 (defvar savefold-org--folds-attr 'savefold-org-folds)
 
-(defun savefold-org--mapc-buffers (fun)
-  "Over all org buffers, call FUN with `with-current-buffer'."
-  (mapc
-   (lambda (buf)
-     (with-current-buffer buf
-       (when (derived-mode-p 'org-mode)
-         (funcall fun))))
-   (buffer-list)))
-
 (defun savefold-org--recover-folds ()
   "Read and apply saved org fold data for the current buffer."
   (if (not (savefold-utils-file-recently-modifiedp))
@@ -83,12 +74,6 @@ reason for this to be non-nil."
     (message
      "savefold: Buffer contents newer than fold data for buffer '%s'. Not applying."
      (current-buffer))))
-
-(defun savefold-org--setup-save-on-kill-buffer ()
-  (add-hook 'kill-buffer-hook 'savefold-org--save-folds nil t))
-
-(defun savefold-org--unhook-save-on-kill-buffer ()
-  (remove-hook 'kill-buffer-hook 'savefold-org--save-folds t))
 
 (defun savefold-org--org-foldp (ov)
   "Check whether the overlay is for an org-mode fold.
@@ -114,13 +99,28 @@ invisibility spec, but only the invisibility specs exclusive to org-mode:
     (savefold-utils-set-file-attr-modtime)
     (savefold-utils-write-out-file-attrs)))
 
+(defun savefold-org--set-up-save-on-kill-buffer ()
+  (add-hook 'kill-buffer-hook 'savefold-org--save-folds nil t))
+
+(defun savefold-org--mapc-buffers (fun)
+  "Over all org buffers, call FUN with `with-current-buffer'."
+  (mapc
+   (lambda (buf)
+     (with-current-buffer buf
+       (when (derived-mode-p 'org-mode)
+         (funcall fun))))
+   (buffer-list)))
+
 (defun savefold-org--save-all-buffers-folds ()
   "Save org fold data for all buffers."
   (savefold-org--mapc-buffers 'savefold-org--save-folds))
 
-(defun savefold-org--setup-save-on-kill-for-existing-buffers ()
+(defun savefold-org--set-up-save-on-kill-for-existing-buffers ()
   "Set up save on kill across all existing org buffers."
-  (savefold-org--mapc-buffers 'savefold-org--setup-save-on-kill-buffer))
+  (savefold-org--mapc-buffers 'savefold-org--set-up-save-on-kill-buffer))
+
+(defun savefold-org--unhook-save-on-kill-buffer ()
+  (remove-hook 'kill-buffer-hook 'savefold-org--save-folds t))
 
 (defun savefold-org--unhook-save-on-kill-for-existing-buffers ()
   "Remove the save on kill hook across all existing org buffers."
@@ -136,15 +136,15 @@ invisibility spec, but only the invisibility specs exclusive to org-mode:
         (add-hook 'org-mode-hook 'savefold-org--recover-folds)
 
         ;; Save folds on file close
-        (add-hook 'org-mode-hook 'savefold-org--setup-save-on-kill-buffer)
+        (add-hook 'org-mode-hook 'savefold-org--set-up-save-on-kill-buffer)
         (add-hook 'kill-emacs-hook 'savefold-org--save-all-buffers-folds)
 
         ;; Set up save folds on existing buffers
-        (savefold-org--setup-save-on-kill-for-existing-buffers))
+        (savefold-org--set-up-save-on-kill-for-existing-buffers))
 
     (remove-hook 'org-mode-hook 'savefold-org--recover-folds)
 
-    (remove-hook 'org-mode-hook 'savefold-org--setup-save-on-kill-buffer)
+    (remove-hook 'org-mode-hook 'savefold-org--set-up-save-on-kill-buffer)
     (remove-hook 'kill-emacs-hook 'savefold-org--save-all-buffers-folds)
 
     (savefold-org--unhook-save-on-kill-for-existing-buffers)))
