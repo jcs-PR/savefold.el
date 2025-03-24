@@ -102,29 +102,26 @@ invisibility spec, but only the invisibility specs exclusive to org-mode:
 (defun savefold-org--set-up-save-on-kill-buffer ()
   (add-hook 'kill-buffer-hook 'savefold-org--save-folds nil t))
 
-(defun savefold-org--mapc-buffers (fun)
-  "Over all org buffers, call FUN with `with-current-buffer'."
-  (mapc
-   (lambda (buf)
-     (with-current-buffer buf
-       (when (derived-mode-p 'org-mode)
-         (funcall fun))))
-   (buffer-list)))
+(defun savefold-org--org-bufferp ()
+  (derived-mode-p 'org-mode))
 
 (defun savefold-org--save-all-buffers-folds ()
   "Save org fold data for all buffers."
-  (savefold-org--mapc-buffers 'savefold-org--save-folds))
+  (savefold-utils--mapc-buffers 'savefold-org--org-bufferp
+                                'savefold-org--save-folds))
 
 (defun savefold-org--set-up-save-on-kill-for-existing-buffers ()
   "Set up save on kill across all existing org buffers."
-  (savefold-org--mapc-buffers 'savefold-org--set-up-save-on-kill-buffer))
+  (savefold-utils--mapc-buffers 'savefold-org--org-bufferp
+                                'savefold-org--set-up-save-on-kill-buffer))
 
 (defun savefold-org--unhook-save-on-kill-buffer ()
   (remove-hook 'kill-buffer-hook 'savefold-org--save-folds t))
 
 (defun savefold-org--unhook-save-on-kill-for-existing-buffers ()
   "Remove the save on kill hook across all existing org buffers."
-  (savefold-org--mapc-buffers 'savefold-org--unhook-save-on-kill-buffer))
+  (savefold-utils--mapc-buffers 'savefold-org--org-bufferp
+                                'savefold-org--unhook-save-on-kill-buffer))
 
 (define-minor-mode savefold-org-mode
   "Toggle global persistence for org-mode folds."

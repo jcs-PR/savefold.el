@@ -72,31 +72,27 @@ This also saves the modification time of the file."
 (defun savefold-outline--set-up-save-on-kill-buffer ()
   (add-hook 'kill-buffer-hook 'savefold-outline--save-folds nil t))
 
- ;; Some of this logic is redundant across backends...
-(defun savefold-outline--mapc-buffers (fun)
-  "Over all outline buffers, call FUN with `with-current-buffer'."
-  (mapc
-   (lambda (buf)
-     (with-current-buffer buf
-       (when (or (derived-mode-p 'outline-mode)
-                 (bound-and-true-p outline-minor-mode))
-         (funcall fun))))
-   (buffer-list)))
+(defun savefold-outline--outline-bufferp ()
+  (or (derived-mode-p 'outline-mode)
+      (bound-and-true-p outline-minor-mode)))
 
 (defun savefold-outline--save-all-buffers-folds ()
   "Save outline fold data for all buffers."
-  (savefold-org--mapc-buffers 'savefold-outline--save-folds))
+  (savefold-utils--mapc-buffers 'savefold-outline--outline-bufferp
+                                'savefold-outline--save-folds))
 
 (defun savefold-outline--set-up-save-on-kill-for-existing-buffers ()
   "Set up save on kill across all existing outline buffers."
-  (savefold-outline--mapc-buffers 'savefold-outline--set-up-save-on-kill-buffer))
+  (savefold-utils--mapc-buffers 'savefold-outline--outline-bufferp
+                                'savefold-outline--set-up-save-on-kill-buffer))
 
 (defun savefold-outline--unhook-save-on-kill-buffer ()
   (remove-hook 'kill-buffer-hook 'savefold-outline--save-folds t))
 
 (defun savefold-outline--unhook-save-on-kill-for-existing-buffers ()
   "Remove the save on kill hook across all existing outline buffers."
-  (savefold-outline--mapc-buffers 'savefold-outline--unhook-save-on-kill-buffer))
+  (savefold-utils--mapc-buffers 'savefold-outline--outline-bufferp
+                                'savefold-outline--unhook-save-on-kill-buffer))
 
 ;;;###autoload
 (define-minor-mode savefold-outline-mode

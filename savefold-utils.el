@@ -107,6 +107,15 @@ False if the current file doesn't have a 'savefold-modtime attr."
   (when-let ((saved-modtime (savefold-utils-get-file-attr 'savefold-modtime)))
     (< (float-time saved-modtime) (float-time (visited-file-modtime)))))
 
+(defun savefold-utils--mapc-buffers (pred fun)
+  "For all buffers, inside `with-current-buffer', if PRED, do FUN."
+  (mapc
+   (lambda (buf)
+     (with-current-buffer buf
+       (when (funcall pred)
+         (funcall fun))))
+   (buffer-list)))
+
 (provide 'savefold-utils)
 
 ;;; savefold-utils.el ends here

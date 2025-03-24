@@ -70,28 +70,25 @@
 (defun savefold-origami--set-up-save-on-kill-buffer ()
   (add-hook 'kill-buffer-hook 'savefold-origami--save-folds nil t))
 
-(defun savefold-origami--mapc-buffers (fun)
-  "Over all origami buffers, call FUN with `with-current-buffer'."
-  (mapc
-   (lambda (buf)
-     (with-current-buffer buf
-       (when (bound-and-true-p origami-mode)
-         (funcall fun))))
-   (buffer-list)))
+(defun savefold-origami--origami-bufferp ()
+  (bound-and-true-p origami-mode))
 
 (defun savefold-origami--save-all-buffers-folds ()
   "Save origami fold data for all buffers."
-  (savefold-origami--mapc-buffers 'savefold-origami--save-folds))
+  (savefold-utils--mapc-buffers 'savefold-origami--origami-bufferp
+                                'savefold-origami--save-folds))
 
 (defun savefold-origami--set-up-save-on-kill-for-existing-buffers ()
   "Set up save on kill across all existing origami buffers."
-  (savefold-origami--mapc-buffers 'savefold-origami--set-up-save-on-kill-buffer))
+  (savefold-utils--mapc-buffers 'savefold-origami--origami-bufferp
+                                'savefold-origami--set-up-save-on-kill-buffer))
 
 (defun savefold-origami--unhook-save-on-kill-buffer ()
   (remove-hook 'kill-buffer-hook 'savefold-origami--save-folds t))
 
 (defun savefold-origami--unhook-save-on-kill-for-existing-buffers ()
-  (savefold-origami--mapc-buffers 'savefold-origami--unhook-save-on-kill-buffer))
+  (savefold-utils--mapc-buffers 'savefold-origami--origami-bufferp
+                                'savefold-origami--unhook-save-on-kill-buffer))
 
 (define-minor-mode savefold-origami-mode
   "Toggle global persistence for origami-mode folds."
