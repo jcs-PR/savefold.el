@@ -1,11 +1,6 @@
 ;;; savefold-outline.el --- savefold for outline mode -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2025 Jacob Fong
-;; Author: Jacob Fong <jacobcfong@gmail.com>
-;; Version: 0.1
-;; Homepage: https://github.com/jcfk/savefold.el
-
-;; Package-Requires: ((emacs "28.2"))
 
 ;; Permission is hereby granted, free of charge, to any person obtaining a copy
 ;; of this software and associated documentation files (the “Software”), to deal

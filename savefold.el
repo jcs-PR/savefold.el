@@ -1,8 +1,9 @@
-;;; savefold.el -- persistence for various folding systems -*- lexical-binding: t; -*-
+;;; savefold.el --- persistence for various folding systems -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2025 Jacob Fong
 ;; Author: Jacob Fong <jacobcfong@gmail.com>
-;; Version: 0.1
+;; Version: 0.0.1
+;; Keywords: convenience
 ;; Homepage: https://github.com/jcfk/savefold.el
 
 ;; Package-Requires: ((emacs "28.2"))
