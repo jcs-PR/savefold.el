@@ -45,7 +45,7 @@
      (current-buffer))))
 
 (defun savefold-outline--outline-foldp (ov)
-  "Checks whether OV is an outline-mode/outline-minor-mode fold overlay."
+  "Check whether OV is an outline-mode/outline-minor-mode fold overlay."
   (eq (overlay-get ov 'invisible) 'outline))
 
 (defun savefold-outline--save-folds ()

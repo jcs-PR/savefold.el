@@ -76,7 +76,7 @@ Use FPATH instead of the current buffer file if non-nil."
     (if (or (version< emacs-version "29.1")
             (readablep value))
           (puthash attr value (savefold-utils--get-file-attr-table fpath))
-        (error "savefold: File attr value must be readablep."))))
+        (error "savefold: File attr value must be readablep"))))
 
 (defun savefold-utils-write-out-file-attrs (&optional fpath)
   "Write attr hash table for the current file to the disk.
