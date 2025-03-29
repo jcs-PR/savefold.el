@@ -14,3 +14,7 @@
 (source "melpa")
 
 (depends-on "emacs" "28.2")
+(depends-on "origami")
+(development
+  (depends-on "buttercup"))
+(load-paths "./tests")

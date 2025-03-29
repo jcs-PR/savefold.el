@@ -58,9 +58,7 @@ This also saves the modification time of the file."
      savefold-outline--folds-attr
      (mapcar
       (lambda (ov) `(,(overlay-start ov) ,(overlay-end ov)))
-      (seq-filter 'savefold-outline--outline-foldp
-                  ;; overlays-in does not necessarily return overlays in order
-                  (overlays-in (point-min) (point-max)))))
+      (savefold-utils--get-overlays 'savefold-outline--outline-foldp)))
     (savefold-utils-set-file-attr-modtime)
     (savefold-utils-write-out-file-attrs)))
 

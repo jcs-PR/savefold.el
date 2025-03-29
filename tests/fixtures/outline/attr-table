@@ -1,0 +1,1 @@
+#s(hash-table size 65 test eql rehash-size 1.5 rehash-threshold 0.8125 data (savefold-outline-folds ((452 1065) (1620 3733)) savefold-modtime (0 0 0 0)))

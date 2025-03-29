@@ -89,8 +89,7 @@ invisibility spec, but only the invisibility specs exclusive to org-mode:
      (mapcar
       (lambda (ov)
         `(,(overlay-start ov) ,(overlay-end ov) ,(overlay-get ov 'invisible)))
-      (seq-filter 'savefold-org--org-foldp
-                  (overlays-in (point-min) (point-max)))))
+      (savefold-utils--get-overlays 'savefold-org--org-foldp)))
     (savefold-utils-set-file-attr-modtime)
     (savefold-utils-write-out-file-attrs)))
 

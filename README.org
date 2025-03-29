@@ -24,3 +24,7 @@ Notes:
 
 - Setting ~org-startup-folded~ to nil or ~'showeverything~ is recommended for
   proper org support.
+
+** Development
+
+Savefold uses [[https://emacs-eask.github.io/][Eask]] for environment management and [[https://github.com/jorgenschaefer/emacs-buttercup][Buttercup]] for testing.

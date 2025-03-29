@@ -72,9 +72,11 @@ to save them to the disk.
 Use FPATH instead of the current buffer file if non-nil."
   (when-let ((fpath (or fpath
                         (and (buffer-file-name) (expand-file-name (buffer-file-name))))))
-    (if (readablep value)
-        (puthash attr value (savefold-utils--get-file-attr-table fpath))
-      (error "savefold: File attr value must be readablep."))))
+    ;; Use compat for 28.2?
+    (if (or (version< emacs-version "29.1")
+            (readablep value))
+          (puthash attr value (savefold-utils--get-file-attr-table fpath))
+        (error "savefold: File attr value must be readablep."))))
 
 (defun savefold-utils-write-out-file-attrs (&optional fpath)
   "Write attr hash table for the current file to the disk.
@@ -110,6 +112,11 @@ False if the current file doesn't have a 'savefold-modtime attr."
        (when (funcall pred)
          (funcall fun))))
    (buffer-list)))
+
+(defun savefold-utils--get-overlays (pred)
+  "Return all overlays in the current buffer for which PRED is non-nil."
+  ;; overlays-in does not necessarily return overlays in order
+  (seq-filter pred (overlays-in (point-min) (point-max))))
 
 (provide 'savefold-utils)
 

@@ -45,7 +45,8 @@
 
 (defun savefold-origami--origami-foldp (ov)
   "Check whether OV is an origami fold overlay."
-  (eq (overlay-get ov 'creator) 'origami))
+  (and (eq (overlay-get ov 'creator) 'origami)
+       (overlay-get ov 'invisible)))
 
 (defun savefold-origami--save-folds ()
   "Save origami fold data for the current buffer."
@@ -54,11 +55,7 @@
      savefold-origami--folds-attr
      (mapcar
       'overlay-start
-      (seq-filter
-       (lambda (ov)
-         (and (savefold-origami--origami-foldp ov)
-              (overlay-get ov 'invisible)))
-       (overlays-in (point-min) (point-max)))))
+      (savefold-utils--get-overlays 'savefold-origami--origami-foldp)))
     (savefold-utils-set-file-attr-modtime)
     (savefold-utils-write-out-file-attrs)))
 
