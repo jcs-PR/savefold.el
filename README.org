@@ -1,4 +1,4 @@
-* savefold.el
+* savefold.el [[https://github.com/jcfk/savefold.el/actions/workflows/test.yml][file:https://github.com/jcfk/savefold.el/actions/workflows/test.yml/badge.svg]]
 
 This package is a family of global minor modes that persist folds made by
 various existing overlay-based folding systems, saving them to the disk and
