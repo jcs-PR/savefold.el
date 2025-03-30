@@ -17,4 +17,6 @@ jobs:
         with:
           version: snapshot
       - name: Run tests
-        run: eask test buttercup
+        run: |
+          eask install-deps --dev
+          eask test buttercup
