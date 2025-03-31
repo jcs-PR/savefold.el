@@ -35,11 +35,11 @@
 (defun savefold-outline--recover-folds ()
   "Read and apply saved outline fold data for the current buffer."
   ;; Maybe find away to abstract out this recency check
-  (if (not (savefold-utils-file-recently-modifiedp))
+  (if (not (savefold-utils--file-recently-modifiedp))
       (mapc
        (lambda (fold-data)
          (outline-flag-region (car fold-data) (cadr fold-data) t))
-       (savefold-utils-get-file-attr savefold-outline--folds-attr))
+       (savefold-utils--get-file-attr savefold-outline--folds-attr))
     (message
      "savefold: Buffer contents newer than fold data for buffer '%s'. Not applying."
      (current-buffer))))
@@ -54,13 +54,13 @@
 This also saves the modification time of the file."
   ;; Assume this means the buffer reflects the actual file state
   (when (not (buffer-modified-p))
-    (savefold-utils-set-file-attr
+    (savefold-utils--set-file-attr
      savefold-outline--folds-attr
      (mapcar
       (lambda (ov) `(,(overlay-start ov) ,(overlay-end ov)))
       (savefold-utils--get-overlays 'savefold-outline--outline-foldp)))
-    (savefold-utils-set-file-attr-modtime)
-    (savefold-utils-write-out-file-attrs)))
+    (savefold-utils--set-file-attr-modtime)
+    (savefold-utils--write-out-file-attrs)))
 
 (defun savefold-outline--set-up-save-on-kill-buffer ()
   (add-hook 'kill-buffer-hook 'savefold-outline--save-folds nil t))

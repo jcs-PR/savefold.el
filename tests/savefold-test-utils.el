@@ -66,8 +66,8 @@ path of SOURCE-FPATH copied under the temporary directory."
        ;; Force fundamental-mode, so as to not trigger any hooks.
        (let (auto-mode-alist)
          (savefold-test-utils--with-open-file temp-source-fpath
-           (savefold-utils-set-file-attr-modtime)
-           (savefold-utils-write-out-file-attrs)))
+           (savefold-utils--set-file-attr-modtime)
+           (savefold-utils--write-out-file-attrs)))
 
        ,@body
 

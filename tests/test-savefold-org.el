@@ -41,8 +41,8 @@
 
     (it "does not recover folds upon file open if file was recently modified"
       (savefold-test-utils--with-temp-savefold-environment source-fpath attr-fpath
-        (savefold-utils-set-file-attr 'savefold-modtime '(0 0 0 0) temp-source-fpath)
-        (savefold-utils-write-out-file-attrs temp-source-fpath)
+        (savefold-utils--set-file-attr 'savefold-modtime '(0 0 0 0) temp-source-fpath)
+        (savefold-utils--write-out-file-attrs temp-source-fpath)
 
         (savefold-test-utils--with-open-file temp-source-fpath
           (expect
@@ -57,7 +57,7 @@
             (mapcar
              (lambda (ov) `(,(overlay-start ov) ,(overlay-end ov)))
              (savefold-utils--get-overlays 'savefold-outline--outline-foldp))
-            (savefold-utils-get-file-attr savefold-outline--folds-attr)))
+            (savefold-utils--get-file-attr savefold-outline--folds-attr)))
 
           ;; Strictly org folds
           (expect
@@ -66,7 +66,7 @@
              (lambda (ov)
                `(,(overlay-start ov) ,(overlay-end ov) ,(overlay-get ov 'invisible)))
              (savefold-utils--get-overlays 'savefold-org--org-foldp))
-            (savefold-utils-get-file-attr savefold-org--folds-attr))))))
+            (savefold-utils--get-file-attr savefold-org--folds-attr))))))
 
     (it "saves folds upon file close"
       (savefold-test-utils--with-temp-savefold-environment source-fpath attr-fpath
@@ -79,13 +79,13 @@
         ;; Outline folds
         (expect
          (savefold-test-utils--sets-equalp
-          (savefold-utils-get-file-attr savefold-outline--folds-attr temp-source-fpath)
+          (savefold-utils--get-file-attr savefold-outline--folds-attr temp-source-fpath)
           '((111 414))))
 
         ;; Strictly org folds
         (expect
          (savefold-test-utils--sets-equalp
-          (savefold-utils-get-file-attr savefold-org--folds-attr temp-source-fpath)
+          (savefold-utils--get-file-attr savefold-org--folds-attr temp-source-fpath)
           '((757 817 org-babel-hide-result) (558 616 org-babel-hide-result)))))))
 
   (describe "when turned back off"
@@ -106,13 +106,13 @@
         ;; Outline folds
         (expect
          (savefold-test-utils--sets-equalp
-          (savefold-utils-get-file-attr savefold-outline--folds-attr temp-source-fpath)
+          (savefold-utils--get-file-attr savefold-outline--folds-attr temp-source-fpath)
           '((111 414) (846 2959))))
 
         ;; Strictly org folds
         (expect
          (savefold-test-utils--sets-equalp
-          (savefold-utils-get-file-attr savefold-org--folds-attr temp-source-fpath)
+          (savefold-utils--get-file-attr savefold-org--folds-attr temp-source-fpath)
           '((757 817 org-babel-hide-result))))))))
 
 ;;; test-savefold-org.el ends here

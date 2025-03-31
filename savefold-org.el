@@ -49,7 +49,7 @@ reason for this to be non-nil."
 
 (defun savefold-org--recover-folds ()
   "Read and apply saved org fold data for the current buffer."
-  (if (not (savefold-utils-file-recently-modifiedp))
+  (if (not (savefold-utils--file-recently-modifiedp))
       (progn
         (when (and (not savefold-org-inhibit-outline-integration)
                    (not savefold-outline-mode))
@@ -65,7 +65,7 @@ reason for this to be non-nil."
                  (goto-char start)
                  (org-babel-hide-result-toggle-maybe)))
               (t (org-flag-region start end t spec)))))
-         (savefold-utils-get-file-attr savefold-org--folds-attr)))
+         (savefold-utils--get-file-attr savefold-org--folds-attr)))
     (message
      "savefold: Buffer contents newer than fold data for buffer '%s'. Not applying."
      (current-buffer))))
@@ -84,14 +84,14 @@ invisibility spec, but only the invisibility specs exclusive to org-mode:
     (when (and (not savefold-org-inhibit-outline-integration)
                (not savefold-outline-mode))
       (savefold-outline--save-folds))
-    (savefold-utils-set-file-attr
+    (savefold-utils--set-file-attr
      savefold-org--folds-attr
      (mapcar
       (lambda (ov)
         `(,(overlay-start ov) ,(overlay-end ov) ,(overlay-get ov 'invisible)))
       (savefold-utils--get-overlays 'savefold-org--org-foldp)))
-    (savefold-utils-set-file-attr-modtime)
-    (savefold-utils-write-out-file-attrs)))
+    (savefold-utils--set-file-attr-modtime)
+    (savefold-utils--write-out-file-attrs)))
 
 (defun savefold-org--set-up-save-on-kill-buffer ()
   (add-hook 'kill-buffer-hook 'savefold-org--save-folds nil t))

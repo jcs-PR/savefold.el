@@ -41,8 +41,8 @@
 
     (it "does not recover folds upon file open if file was recently modified"
       (savefold-test-utils--with-temp-savefold-environment source-fpath attr-fpath
-        (savefold-utils-set-file-attr 'savefold-modtime '(0 0 0 0) temp-source-fpath)
-        (savefold-utils-write-out-file-attrs temp-source-fpath)
+        (savefold-utils--set-file-attr 'savefold-modtime '(0 0 0 0) temp-source-fpath)
+        (savefold-utils--write-out-file-attrs temp-source-fpath)
 
         (savefold-test-utils--with-open-file temp-source-fpath
           (origami-mode 1)
@@ -58,7 +58,7 @@
             (mapcar
              'overlay-start
              (savefold-utils--get-overlays 'savefold-origami--origami-foldp))
-            (savefold-utils-get-file-attr savefold-origami--folds-attr))))))
+            (savefold-utils--get-file-attr savefold-origami--folds-attr))))))
 
     (it "saves folds upon file close"
       (savefold-test-utils--with-temp-savefold-environment source-fpath attr-fpath
@@ -68,7 +68,7 @@
 
         (expect
          (savefold-test-utils--sets-equalp
-          (savefold-utils-get-file-attr savefold-origami--folds-attr temp-source-fpath)
+          (savefold-utils--get-file-attr savefold-origami--folds-attr temp-source-fpath)
           '(100 132 328)))))
 
     ;; How to test? (it "saves folds upon killing emacs")
@@ -92,7 +92,7 @@
 
         (expect
          (savefold-test-utils--sets-equalp
-          (savefold-utils-get-file-attr savefold-origami--folds-attr temp-source-fpath)
+          (savefold-utils--get-file-attr savefold-origami--folds-attr temp-source-fpath)
           '(100 328)))))))
 
 ;;; test-savefold-origami.el ends here

@@ -55,7 +55,7 @@ If no attr table file exists, return a new hash table."
       (puthash fpath attr-table savefold-utils--fpath-to-attr-table))
     attr-table))
 
-(defun savefold-utils-get-file-attr (attr &optional fpath)
+(defun savefold-utils--get-file-attr (attr &optional fpath)
   "Return attribute ATTR for the current file.
 
 Use FPATH instead if non-nil."
@@ -63,10 +63,10 @@ Use FPATH instead if non-nil."
                         (and (buffer-file-name) (expand-file-name (buffer-file-name))))))
     (gethash attr (savefold-utils--get-file-attr-table fpath))))
 
-(defun savefold-utils-set-file-attr (attr value &optional fpath)
+(defun savefold-utils--set-file-attr (attr value &optional fpath)
   "Set attribute ATTR for VALUE in the current file's hash table.
 
-Make sure to `savefold-utils-write-out-file-attrs' after each batch of changes
+Make sure to `savefold-utils--write-out-file-attrs' after each batch of changes
 to save them to the disk.
 
 Use FPATH instead of the current buffer file if non-nil."
@@ -78,7 +78,7 @@ Use FPATH instead of the current buffer file if non-nil."
           (puthash attr value (savefold-utils--get-file-attr-table fpath))
         (error "savefold: File attr value must be readablep"))))
 
-(defun savefold-utils-write-out-file-attrs (&optional fpath)
+(defun savefold-utils--write-out-file-attrs (&optional fpath)
   "Write attr hash table for the current file to the disk.
 
 Use FPATH instead if non-nil."
@@ -91,17 +91,17 @@ Use FPATH instead if non-nil."
        (gethash fpath savefold-utils--fpath-to-attr-table)
        (current-buffer)))))
 
-(defun savefold-utils-set-file-attr-modtime ()
+(defun savefold-utils--set-file-attr-modtime ()
   "Set the current file's modtime as a file attribute.
 
-Must `savefold-utils-write-out-file-attrs' afterwards."
-  (savefold-utils-set-file-attr 'savefold-modtime (visited-file-modtime)))
+Must `savefold-utils--write-out-file-attrs' afterwards."
+  (savefold-utils--set-file-attr 'savefold-modtime (visited-file-modtime)))
 
-(defun savefold-utils-file-recently-modifiedp ()
+(defun savefold-utils--file-recently-modifiedp ()
   "The current file has modtime recenter than the 'savefold-modtime attr.
 
 False if the current file doesn't have a 'savefold-modtime attr."
-  (when-let ((saved-modtime (savefold-utils-get-file-attr 'savefold-modtime)))
+  (when-let ((saved-modtime (savefold-utils--get-file-attr 'savefold-modtime)))
     (< (float-time saved-modtime) (float-time (visited-file-modtime)))))
 
 (defun savefold-utils--mapc-buffers (pred fun)

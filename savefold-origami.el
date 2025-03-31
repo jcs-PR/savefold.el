@@ -33,7 +33,7 @@
 
 (defun savefold-origami--recover-folds ()
   "Read and apply saved origami fold data for the current buffer."
-  (if (savefold-utils-file-recently-modifiedp)
+  (if (savefold-utils--file-recently-modifiedp)
       (message
        "savefold: Buffer contents newer than fold data for buffer '%s'. Not applying."
        (current-buffer))
@@ -41,7 +41,7 @@
      ;; What we've saved is really the node start+offset. Should be ok.
      (lambda (start)
        (origami-close-node (current-buffer) start))
-     (savefold-utils-get-file-attr savefold-origami--folds-attr))))
+     (savefold-utils--get-file-attr savefold-origami--folds-attr))))
 
 (defun savefold-origami--origami-foldp (ov)
   "Check whether OV is an origami fold overlay."
@@ -51,13 +51,13 @@
 (defun savefold-origami--save-folds ()
   "Save origami fold data for the current buffer."
   (when (not (buffer-modified-p))
-    (savefold-utils-set-file-attr
+    (savefold-utils--set-file-attr
      savefold-origami--folds-attr
      (mapcar
       'overlay-start
       (savefold-utils--get-overlays 'savefold-origami--origami-foldp)))
-    (savefold-utils-set-file-attr-modtime)
-    (savefold-utils-write-out-file-attrs)))
+    (savefold-utils--set-file-attr-modtime)
+    (savefold-utils--write-out-file-attrs)))
 
 (defun savefold-origami--set-up-save-on-kill-buffer ()
   (add-hook 'kill-buffer-hook 'savefold-origami--save-folds nil t))
