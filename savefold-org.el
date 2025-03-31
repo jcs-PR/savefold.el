@@ -49,26 +49,23 @@ reason for this to be non-nil."
 
 (defun savefold-org--recover-folds ()
   "Read and apply saved org fold data for the current buffer."
-  (if (not (savefold-utils--file-recently-modifiedp))
-      (progn
-        (when (and (not savefold-org-inhibit-outline-integration)
-                   (not savefold-outline-mode))
-          (savefold-outline--recover-folds))
-        (mapc
-         (lambda (fold-data)
-           (let ((start (car fold-data))
-                 (end (cadr fold-data))
-                 (spec (caddr fold-data)))
-             (cond
-              ((eq spec 'org-babel-hide-result)
-               (save-excursion
-                 (goto-char start)
-                 (org-babel-hide-result-toggle-maybe)))
-              (t (org-flag-region start end t spec)))))
-         (savefold-utils--get-file-attr savefold-org--folds-attr)))
-    (message
-     "savefold: Buffer contents newer than fold data for buffer '%s'. Not applying."
-     (current-buffer))))
+  (savefold-utils--unless-file-recently-modified
+   (progn
+     (when (and (not savefold-org-inhibit-outline-integration)
+                (not savefold-outline-mode))
+       (savefold-outline--recover-folds))
+     (mapc
+      (lambda (fold-data)
+        (let ((start (car fold-data))
+              (end (cadr fold-data))
+              (spec (caddr fold-data)))
+          (cond
+           ((eq spec 'org-babel-hide-result)
+            (save-excursion
+              (goto-char start)
+              (org-babel-hide-result-toggle-maybe)))
+           (t (org-flag-region start end t spec)))))
+      (savefold-utils--get-file-attr savefold-org--folds-attr)))))
 
 (defun savefold-org--org-foldp (ov)
   "Check whether the overlay is for an org-mode fold.

@@ -118,6 +118,14 @@ False if the current file doesn't have a 'savefold-modtime attr."
   ;; overlays-in does not necessarily return overlays in order
   (seq-filter pred (overlays-in (point-min) (point-max))))
 
+(defmacro savefold-utils--unless-file-recently-modified (&rest body)
+  "Evaluate BODY unless current file recently modified, per file attrs."
+  `(if (not (savefold-utils--file-recently-modifiedp))
+       ,@body
+     (message
+      "savefold: Buffer contents newer than fold data for buffer '%s'. Not applying."
+      (current-buffer))))
+
 (provide 'savefold-utils)
 
 ;;; savefold-utils.el ends here

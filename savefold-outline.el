@@ -35,14 +35,11 @@
 (defun savefold-outline--recover-folds ()
   "Read and apply saved outline fold data for the current buffer."
   ;; Maybe find away to abstract out this recency check
-  (if (not (savefold-utils--file-recently-modifiedp))
-      (mapc
-       (lambda (fold-data)
-         (outline-flag-region (car fold-data) (cadr fold-data) t))
-       (savefold-utils--get-file-attr savefold-outline--folds-attr))
-    (message
-     "savefold: Buffer contents newer than fold data for buffer '%s'. Not applying."
-     (current-buffer))))
+  (savefold-utils--unless-file-recently-modified
+   (mapc
+    (lambda (fold-data)
+      (outline-flag-region (car fold-data) (cadr fold-data) t))
+    (savefold-utils--get-file-attr savefold-outline--folds-attr))))
 
 (defun savefold-outline--outline-foldp (ov)
   "Check whether OV is an outline-mode/outline-minor-mode fold overlay."

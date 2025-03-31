@@ -33,15 +33,12 @@
 
 (defun savefold-origami--recover-folds ()
   "Read and apply saved origami fold data for the current buffer."
-  (if (savefold-utils--file-recently-modifiedp)
-      (message
-       "savefold: Buffer contents newer than fold data for buffer '%s'. Not applying."
-       (current-buffer))
-    (mapc
-     ;; What we've saved is really the node start+offset. Should be ok.
-     (lambda (start)
-       (origami-close-node (current-buffer) start))
-     (savefold-utils--get-file-attr savefold-origami--folds-attr))))
+  (savefold-utils--unless-file-recently-modified
+   (mapc
+    ;; What we've saved is really the node start+offset. Should be ok.
+    (lambda (start)
+      (origami-close-node (current-buffer) start))
+    (savefold-utils--get-file-attr savefold-origami--folds-attr))))
 
 (defun savefold-origami--origami-foldp (ov)
   "Check whether OV is an origami fold overlay."
