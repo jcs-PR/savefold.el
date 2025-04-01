@@ -22,7 +22,7 @@ reapplying upon file open. Currently supported:
 
 Notes:
 
-- Setting ~org-startup-folded~ to nil or ~'showeverything~ is recommended for
+- Setting ~org-startup-folded~ to ~'showeverything~ is recommended for
   proper org support.
 
 ** Development
