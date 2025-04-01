@@ -29,7 +29,7 @@
 ;; Use text property style folding when available. Assume org is not loaded at
 ;; this point.
 ;; Probably should also test old-fashioned folding in the newer versions
-(when (version<= "29" emacs-version)
+(when (version< "29" emacs-version)
     (setq org-fold-core-style 'text-properties))
 
 (require 'savefold-org)
