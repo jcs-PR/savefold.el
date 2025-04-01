@@ -1,0 +1,1 @@
+#s(hash-table size 65 test eql rehash-size 1.5 rehash-threshold 0.8125 data (savefold-org-text-prop-folds ((367 400 org-fold-drawer) (497 546 org-fold-block) (676 705 org-fold-outline)) savefold-org-overlay-folds ((558 587 org-babel-hide-result)) savefold-modtime (0 0 0 0)))

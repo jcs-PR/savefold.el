@@ -1,0 +1,52 @@
+* Test document
+
+The purpose of this document is to facilitate testing of the persistence of all
+four types of org-mode folds: sections/outlines, blocks, drawers, and babel
+results. For each of these types we need to test that savefold can properly save
+and recover fold state.
+
+** Recovery test
+
+The following drawer starts closed and remains closed.
+
+:TEST_DRAWER:
+Lorem ipsum dolor sit amet
+:END:
+
+The following source block and its result both start closed and stay closed.
+
+#+begin_src elisp
+(message "Lorem ipsum dolor sit amet")
+#+end_src
+
+#+RESULTS:
+: Lorem ipsum dolor sit amet
+
+The following section starts closed and remains closed.
+
+*** Lorem ipsum dolor sit amet
+
+Lorem ipsum dolor sit amet
+
+** Saving test
+
+The following drawer starts open and ends closed.
+
+:TEST_DRAWER:
+Lorem ipsum dolor sit amet
+:END:
+
+The following source block and its result both start open and end closed.
+
+#+begin_src elisp
+(message "Lorem ipsum dolor sit amet")
+#+end_src
+
+#+RESULTS:
+: Lorem ipsum dolor sit amet
+
+The following section starts open and ends closed.
+
+*** Lorem ipsum dolor sit amet
+
+Lorem ipsum dolor sit amet
