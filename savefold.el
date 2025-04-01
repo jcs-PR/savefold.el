@@ -49,7 +49,10 @@ See `savefold--all-backends' for a list of possible values."
   :type 'directory
   :group 'savefold)
 
-(defvar savefold--all-backends '(outline org origami)
+;; https://github.com/gregsexton/origami.el/issues/120
+(defvar savefold--all-backends (append
+                                '(outline org)
+                                (when (version< emacs-version "30") '(origami)))
   "List of supported folding backends.")
 
 (defun savefold--enable-backends ()

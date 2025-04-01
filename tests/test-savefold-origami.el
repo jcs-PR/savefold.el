@@ -26,73 +26,75 @@
 
 ;;; Code:
 
-(require 'savefold-origami)
-(require 'savefold-test-utils)
+;; https://github.com/gregsexton/origami.el/issues/120
+(if (version< "30" emacs-version)
+    (message "savefold: skip origami testing in version 30 and above")
+  (require 'savefold-origami)
+  (require 'savefold-test-utils)
+  (describe "savefold-origami-mode"
+    :var* ((source-fpath
+            (expand-file-name "fixtures/origami/eight-queens.py" savefold-test-utils--dir))
+           (attr-fpath
+            (expand-file-name "fixtures/origami/attr-table" savefold-test-utils--dir)))
 
-(describe "savefold-origami-mode"
-  :var* ((source-fpath
-          (expand-file-name "fixtures/origami/eight-queens.py" savefold-test-utils--dir))
-         (attr-fpath
-          (expand-file-name "fixtures/origami/attr-table" savefold-test-utils--dir)))
+    (describe "when on"
+      (before-all
+        (savefold-origami-mode 1))
 
-  (describe "when on"
-    (before-all
-      (savefold-origami-mode 1))
+      (it "does not recover folds upon file open if file was recently modified"
+        (savefold-test-utils--with-temp-savefold-environment source-fpath attr-fpath
+          (savefold-utils--set-file-attr 'savefold-modtime '(0 0 0 0) temp-source-fpath)
+          (savefold-utils--write-out-file-attrs temp-source-fpath)
 
-    (it "does not recover folds upon file open if file was recently modified"
-      (savefold-test-utils--with-temp-savefold-environment source-fpath attr-fpath
-        (savefold-utils--set-file-attr 'savefold-modtime '(0 0 0 0) temp-source-fpath)
-        (savefold-utils--write-out-file-attrs temp-source-fpath)
+          (savefold-test-utils--with-open-file temp-source-fpath
+            (origami-mode 1)
+            (expect
+             (not (savefold-utils--get-overlays 'savefold-origami--origami-foldp))))))
 
-        (savefold-test-utils--with-open-file temp-source-fpath
-          (origami-mode 1)
-          (expect
-           (not (savefold-utils--get-overlays 'savefold-origami--origami-foldp))))))
+      (it "recovers folds upon file open"
+        (savefold-test-utils--with-temp-savefold-environment source-fpath attr-fpath
+          (savefold-test-utils--with-open-file temp-source-fpath
+            (origami-mode 1)
+            (expect
+             (savefold-test-utils--sets-equalp
+              (mapcar
+               'overlay-start
+               (savefold-utils--get-overlays 'savefold-origami--origami-foldp))
+              (savefold-utils--get-file-attr savefold-origami--folds-attr))))))
 
-    (it "recovers folds upon file open"
-      (savefold-test-utils--with-temp-savefold-environment source-fpath attr-fpath
-        (savefold-test-utils--with-open-file temp-source-fpath
-          (origami-mode 1)
+      (it "saves folds upon file close"
+        (savefold-test-utils--with-temp-savefold-environment source-fpath attr-fpath
+          (savefold-test-utils--with-open-file temp-source-fpath
+            (origami-mode 1)
+            (origami-close-node (current-buffer) 111))
+
           (expect
            (savefold-test-utils--sets-equalp
-            (mapcar
-             'overlay-start
-             (savefold-utils--get-overlays 'savefold-origami--origami-foldp))
-            (savefold-utils--get-file-attr savefold-origami--folds-attr))))))
+            (savefold-utils--get-file-attr savefold-origami--folds-attr temp-source-fpath)
+            '(100 132 328)))))
 
-    (it "saves folds upon file close"
-      (savefold-test-utils--with-temp-savefold-environment source-fpath attr-fpath
-        (savefold-test-utils--with-open-file temp-source-fpath
-          (origami-mode 1)
-          (origami-close-node (current-buffer) 111))
+      ;; How to test? (it "saves folds upon killing emacs")
+      )
 
-        (expect
-         (savefold-test-utils--sets-equalp
-          (savefold-utils--get-file-attr savefold-origami--folds-attr temp-source-fpath)
-          '(100 132 328)))))
+    (describe "when turned back off"
+      (before-all
+        (savefold-origami-mode -1))
 
-    ;; How to test? (it "saves folds upon killing emacs")
-    )
+      (it "does not recover folds upon file open"
+        (savefold-test-utils--with-temp-savefold-environment source-fpath attr-fpath
+          (savefold-test-utils--with-open-file temp-source-fpath
+            (origami-mode 1)
+            (expect
+             (not (savefold-utils--get-overlays 'savefold-origami--origami-foldp))))))
 
-  (describe "when turned back off"
-    (before-all
-      (savefold-origami-mode -1))
+      (it "does not save folds upon file close"
+        (savefold-test-utils--with-temp-savefold-environment source-fpath attr-fpath
+          (savefold-test-utils--with-open-file temp-source-fpath
+            (origami-mode 1))
 
-    (it "does not recover folds upon file open"
-      (savefold-test-utils--with-temp-savefold-environment source-fpath attr-fpath
-        (savefold-test-utils--with-open-file temp-source-fpath
-          (origami-mode 1)
           (expect
-           (not (savefold-utils--get-overlays 'savefold-origami--origami-foldp))))))
-
-    (it "does not save folds upon file close"
-      (savefold-test-utils--with-temp-savefold-environment source-fpath attr-fpath
-        (savefold-test-utils--with-open-file temp-source-fpath
-          (origami-mode 1))
-
-        (expect
-         (savefold-test-utils--sets-equalp
-          (savefold-utils--get-file-attr savefold-origami--folds-attr temp-source-fpath)
-          '(100 328)))))))
+           (savefold-test-utils--sets-equalp
+            (savefold-utils--get-file-attr savefold-origami--folds-attr temp-source-fpath)
+            '(100 328))))))))
 
 ;;; test-savefold-origami.el ends here
