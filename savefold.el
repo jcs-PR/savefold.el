@@ -59,11 +59,15 @@ See `savefold--all-backends' for a list of possible values."
   "Require and turn on the savefold minor mode for all `savefold-backends'."
   (mapc
    (lambda (backend)
-     (let* ((backend-name (symbol-name backend))
-            (feature (intern (format "savefold-%s" backend-name)))
-            (minor-mode (intern (format "savefold-%s-mode" backend-name))))
-       (require feature)
-       (funcall minor-mode 1)))
+     (if (not (memq backend savefold--all-backends))
+         (error
+          "savefold: Symbol '%s' is not a member of `savefold--all-backends'"
+          backend)
+       (let* ((backend-name (symbol-name backend))
+              (feature (intern (format "savefold-%s" backend-name)))
+              (minor-mode (intern (format "savefold-%s-mode" backend-name))))
+         (require feature)
+         (funcall minor-mode 1))))
    savefold-backends))
 
 (defun savefold--disable-backends ()
