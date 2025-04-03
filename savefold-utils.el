@@ -104,7 +104,7 @@ False if the current file doesn't have a 'savefold-modtime attr."
   (when-let ((saved-modtime (savefold-utils--get-file-attr 'savefold-modtime)))
     (< (float-time saved-modtime) (float-time (visited-file-modtime)))))
 
-(defun savefold-utils--mapc-buffers (pred fun)
+(defun savefold-utils--mapc-buffers (fun pred)
   "For all buffers, inside `with-current-buffer', if PRED, do FUN."
   (mapc
    (lambda (buf)
@@ -172,7 +172,7 @@ current buffer."
 
        (defun ,save-all-buffers-folds ()
          "Helper func from `savefold-utils--set-up-standard-hooks'."
-         (savefold-utils--mapc-buffers ,backend-bufferp ,save-folds))
+         (savefold-utils--mapc-buffers ,save-folds ,backend-bufferp))
 
        (mapc
         (lambda (mode-hook)
@@ -188,7 +188,7 @@ current buffer."
 
        ;; Set up save folds on file close for existing buffers
        (savefold-utils--mapc-buffers
-        ,backend-bufferp ',set-up-save-on-kill-buffer))))
+        ',set-up-save-on-kill-buffer ,backend-bufferp))))
 
 (defmacro savefold-utils--unhook-standard-hooks (backend
                                                  modes
@@ -206,7 +206,7 @@ current buffer."
 
        (remove-hook 'kill-emacs-hook ',save-all-buffers-folds)
        (savefold-utils--mapc-buffers
-        ,backend-bufferp ',unhook-save-on-kill-buffer))))
+        ',unhook-save-on-kill-buffer ,backend-bufferp))))
 
 (provide 'savefold-utils)
 
