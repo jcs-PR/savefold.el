@@ -75,8 +75,8 @@ Use FPATH instead of the current buffer file if non-nil."
     ;; Use compat for 28.2?
     (if (or (version< emacs-version "29.1")
             (readablep value))
-          (puthash attr value (savefold-utils--get-file-attr-table fpath))
-        (error "savefold: File attr value must be readablep"))))
+        (puthash attr value (savefold-utils--get-file-attr-table fpath))
+      (error "savefold: File attr value must be readablep"))))
 
 (defun savefold-utils--write-out-file-attrs (&optional fpath)
   "Write attr hash table for the current file to the disk.
@@ -125,6 +125,88 @@ False if the current file doesn't have a 'savefold-modtime attr."
      (message
       "savefold: Buffer contents newer than fold data for buffer '%s'. Not applying."
       (current-buffer))))
+
+(defmacro savefold-utils--with-standard-functions (backend modes &rest body)
+  "Eval BODY with generic standard func symbols bound for BACKEND and MODES.
+
+BACKEND should be the quoted backend symbol and MODES should be a quoted list of
+the modes to which this backend should be hooked."
+  (declare (indent 2))
+  `(let ((mode-hooks
+          (mapcar
+           (lambda (mode)
+             (intern
+              (format "%s-hook" mode)))
+           ,modes))
+         (set-up-save-on-kill-buffer
+          (intern
+           (format "savefold-%s--set-up-save-on-kill-buffer" ,backend)))
+         (unhook-save-on-kill-buffer
+          (intern
+           (format "savefold-%s--unhook-save-on-kill-buffer" ,backend)))
+         (save-all-buffers-folds
+          (intern
+           (format "savefold-%s--save-all-buffers-folds" ,backend))))
+     ,@body))
+
+(defmacro savefold-utils--set-up-standard-hooks (backend
+                                                 modes
+                                                 recover-folds
+                                                 save-folds
+                                                 backend-bufferp)
+  "Set up the standard hooks for BACKEND, given MODES and essential functions.
+
+Essential functions are: RECOVER-FOLDS, which recovers folds for the current
+buffer. SAVE-FOLDS, which saves fold data to disk for the current buffer.
+BACKEND-BUFFERP, which checks whether the backend should be active in the
+current buffer."
+  (savefold-utils--with-standard-functions (eval backend) (eval modes)
+    `(progn
+       (defun ,set-up-save-on-kill-buffer ()
+         "Helper func from `savefold-utils--set-up-standard-hooks'."
+         (add-hook 'kill-buffer-hook ,save-folds nil t))
+
+       (defun ,unhook-save-on-kill-buffer ()
+         "Helper func from `savefold-utils--set-up-standard-hooks'."
+         (remove-hook 'kill-buffer-hook ,save-folds t))
+
+       (defun ,save-all-buffers-folds ()
+         "Helper func from `savefold-utils--set-up-standard-hooks'."
+         (savefold-utils--mapc-buffers ,backend-bufferp ,save-folds))
+
+       (mapc
+        (lambda (mode-hook)
+          ;; Recover folds on file open
+          (add-hook mode-hook ,recover-folds)
+
+          ;; Save folds on file close
+          (add-hook mode-hook ',set-up-save-on-kill-buffer))
+        ',mode-hooks)
+
+       ;; Save folds on emacs shutdown
+       (add-hook 'kill-emacs-hook ',save-all-buffers-folds)
+
+       ;; Set up save folds on file close for existing buffers
+       (savefold-utils--mapc-buffers
+        ,backend-bufferp ',set-up-save-on-kill-buffer))))
+
+(defmacro savefold-utils--unhook-standard-hooks (backend
+                                                 modes
+                                                 recover-folds
+                                                 save-folds
+                                                 backend-bufferp)
+  "Undo the standard hooks for BACKEND."
+  (savefold-utils--with-standard-functions (eval backend) (eval modes)
+    `(progn
+       (mapc
+        (lambda (mode-hook)
+          (remove-hook mode-hook ,recover-folds)
+          (remove-hook mode-hook ',set-up-save-on-kill-buffer))
+        ',mode-hooks)
+
+       (remove-hook 'kill-emacs-hook ',save-all-buffers-folds)
+       (savefold-utils--mapc-buffers
+        ,backend-bufferp ',unhook-save-on-kill-buffer))))
 
 (provide 'savefold-utils)
 

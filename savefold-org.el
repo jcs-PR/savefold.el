@@ -176,52 +176,24 @@ invisibility spec, but only the invisibility specs exclusive to org-mode:
       (savefold-utils--set-file-attr-modtime)
       (savefold-utils--write-out-file-attrs))))
 
-(defun savefold-org--set-up-save-on-kill-buffer ()
-  (add-hook 'kill-buffer-hook 'savefold-org--save-folds nil t))
-
-(defun savefold-org--org-bufferp ()
+(defun savefold-org--bufferp ()
   (derived-mode-p 'org-mode))
-
-(defun savefold-org--save-all-buffers-folds ()
-  "Save org fold data for all buffers."
-  (savefold-utils--mapc-buffers 'savefold-org--org-bufferp
-                                'savefold-org--save-folds))
-
-(defun savefold-org--set-up-save-on-kill-for-existing-buffers ()
-  "Set up save on kill across all existing org buffers."
-  (savefold-utils--mapc-buffers 'savefold-org--org-bufferp
-                                'savefold-org--set-up-save-on-kill-buffer))
-
-(defun savefold-org--unhook-save-on-kill-buffer ()
-  (remove-hook 'kill-buffer-hook 'savefold-org--save-folds t))
-
-(defun savefold-org--unhook-save-on-kill-for-existing-buffers ()
-  "Remove the save on kill hook across all existing org buffers."
-  (savefold-utils--mapc-buffers 'savefold-org--org-bufferp
-                                'savefold-org--unhook-save-on-kill-buffer))
 
 (define-minor-mode savefold-org-mode
   "Toggle global persistence for org-mode folds."
   :global t
   :init-value nil
   (if savefold-org-mode
-      (progn
-        ;; Recover folds upon file open
-        (add-hook 'org-mode-hook 'savefold-org--recover-folds)
-
-        ;; Save folds on file close
-        (add-hook 'org-mode-hook 'savefold-org--set-up-save-on-kill-buffer)
-        (add-hook 'kill-emacs-hook 'savefold-org--save-all-buffers-folds)
-
-        ;; Set up save folds on existing buffers
-        (savefold-org--set-up-save-on-kill-for-existing-buffers))
-
-    (remove-hook 'org-mode-hook 'savefold-org--recover-folds)
-
-    (remove-hook 'org-mode-hook 'savefold-org--set-up-save-on-kill-buffer)
-    (remove-hook 'kill-emacs-hook 'savefold-org--save-all-buffers-folds)
-
-    (savefold-org--unhook-save-on-kill-for-existing-buffers)))
+      (savefold-utils--set-up-standard-hooks 'org
+                                             '(org-mode)
+                                             'savefold-org--recover-folds
+                                             'savefold-org--save-folds
+                                             'savefold-org--bufferp)
+    (savefold-utils--unhook-standard-hooks 'org
+                                           '(org-mode)
+                                           'savefold-org--recover-folds
+                                           'savefold-org--save-folds
+                                           'savefold-org--bufferp)))
 
 (provide 'savefold-org)
 

@@ -56,51 +56,24 @@
     (savefold-utils--set-file-attr-modtime)
     (savefold-utils--write-out-file-attrs)))
 
-(defun savefold-origami--set-up-save-on-kill-buffer ()
-  (add-hook 'kill-buffer-hook 'savefold-origami--save-folds nil t))
-
-(defun savefold-origami--origami-bufferp ()
+(defun savefold-origami--bufferp ()
   (bound-and-true-p origami-mode))
-
-(defun savefold-origami--save-all-buffers-folds ()
-  "Save origami fold data for all buffers."
-  (savefold-utils--mapc-buffers 'savefold-origami--origami-bufferp
-                                'savefold-origami--save-folds))
-
-(defun savefold-origami--set-up-save-on-kill-for-existing-buffers ()
-  "Set up save on kill across all existing origami buffers."
-  (savefold-utils--mapc-buffers 'savefold-origami--origami-bufferp
-                                'savefold-origami--set-up-save-on-kill-buffer))
-
-(defun savefold-origami--unhook-save-on-kill-buffer ()
-  (remove-hook 'kill-buffer-hook 'savefold-origami--save-folds t))
-
-(defun savefold-origami--unhook-save-on-kill-for-existing-buffers ()
-  (savefold-utils--mapc-buffers 'savefold-origami--origami-bufferp
-                                'savefold-origami--unhook-save-on-kill-buffer))
 
 (define-minor-mode savefold-origami-mode
   "Toggle global persistence for origami-mode folds."
   :global t
   :init-value nil
   (if savefold-origami-mode
-      (progn
-        ;; Recover folds upon file open
-        (add-hook 'origami-mode-hook 'savefold-origami--recover-folds)
-
-        ;; Save folds on file close
-        (add-hook 'origami-mode-hook 'savefold-origami--set-up-save-on-kill-buffer)
-        (add-hook 'kill-emacs-hook 'savefold-origami--save-all-buffers-folds)
-
-        ;; Set up save folds on existing buffers
-        (savefold-origami--set-up-save-on-kill-for-existing-buffers))
-
-    (remove-hook 'origami-mode-hook 'savefold-origami--recover-folds)
-
-    (remove-hook 'origami-mode-hook 'savefold-origami--set-up-save-on-kill-buffer)
-    (remove-hook 'kill-emacs-hook 'savefold-origami--save-all-buffers-folds)
-
-    (savefold-origami--unhook-save-on-kill-for-existing-buffers)))
+      (savefold-utils--set-up-standard-hooks 'origami
+                                             '(origami-mode)
+                                             'savefold-origami--recover-folds
+                                             'savefold-origami--save-folds
+                                             'savefold-origami--bufferp)
+    (savefold-utils--unhook-standard-hooks 'origami
+                                           '(origami-mode)
+                                           'savefold-origami--recover-folds
+                                           'savefold-origami--save-folds
+                                           'savefold-origami--bufferp)))
 
 (provide 'savefold-origami)
 
