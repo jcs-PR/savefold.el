@@ -63,9 +63,8 @@ See `savefold--all-backends' for a list of possible values."
          (error
           "savefold: Symbol '%s' is not a member of `savefold--all-backends'"
           backend)
-       (let* ((backend-name (symbol-name backend))
-              (feature (intern (format "savefold-%s" backend-name)))
-              (minor-mode (intern (format "savefold-%s-mode" backend-name))))
+       (let ((feature (intern (format "savefold-%s" backend)))
+             (minor-mode (intern (format "savefold-%s-mode" backend))))
          (require feature)
          (funcall minor-mode 1))))
    savefold-backends))
@@ -74,8 +73,7 @@ See `savefold--all-backends' for a list of possible values."
   "Disable on the savefold minor mode for all `savefold-backends'."
   (mapc
    (lambda (backend)
-     (let* ((backend-name (symbol-name backend))
-            (minor-mode (intern (format "savefold-%s-mode" backend-name))))
+     (let ((minor-mode (intern (format "savefold-%s-mode" backend))))
        (funcall minor-mode -1)))
    savefold-backends))
 

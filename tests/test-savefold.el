@@ -41,8 +41,7 @@
                     (lambda (backend)
                       (symbol-value
                        (intern
-                        (format "savefold-%s-mode"
-                                (symbol-name backend)))))
+                        (format "savefold-%s-mode" backend))))
                     savefold--all-backends)))))
 
   (it "disables all backends when turned off"
@@ -54,8 +53,7 @@
                       (not
                        (symbol-value
                         (intern
-                         (format "savefold-%s-mode"
-                                 (symbol-name backend))))))
+                         (format "savefold-%s-mode" backend)))))
                     savefold--all-backends)))))
 
   (after-all
