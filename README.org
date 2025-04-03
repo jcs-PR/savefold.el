@@ -25,6 +25,13 @@ Notes:
 - Setting ~org-startup-folded~ to ~'showeverything~ is recommended for
   proper org support.
 
+Configuration:
+
+- ~savefold-backends~ (default: ~'(outline)~) is a list of backends to be
+  enabled by ~savefold-mode~.
+- ~savefold-directory~ (default: ~(locate-user-emacs-file "savefold")~) is the
+  directory where fold data is saved.
+
 ** Development
 
 Savefold uses [[https://emacs-eask.github.io/][Eask]] for environment management and [[https://github.com/jorgenschaefer/emacs-buttercup][Buttercup]] for testing.
