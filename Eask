@@ -13,7 +13,7 @@
 (source "gnu")
 (source "melpa")
 
-(depends-on "emacs" "28.2")
+(depends-on "emacs" "28.1")
 (depends-on "origami")
 (development
   (depends-on "buttercup"))

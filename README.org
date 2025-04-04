@@ -14,6 +14,8 @@ of the packages implement persistence. It makes sense for fold persistence to be
 abstracted out into a separate package, both for economic reasons and for
 consistency of usage.
 
+Emacs version support: 28, 29, 30
+
 ** Usage
 
 #+begin_src elisp
