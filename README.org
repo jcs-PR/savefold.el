@@ -14,8 +14,6 @@ of the packages implement persistence. It makes sense for fold persistence to be
 abstracted out into a separate package, both for economic reasons and for
 consistency of usage.
 
-Emacs version support: 28, 29, 30
-
 ** Usage
 
 #+begin_src elisp
@@ -43,3 +41,5 @@ Configuration:
 ** Development
 
 Savefold uses [[https://emacs-eask.github.io/][Eask]] for environment management and [[https://github.com/jorgenschaefer/emacs-buttercup][Buttercup]] for testing.
+
+Emacs version support: 28, 29, 30
