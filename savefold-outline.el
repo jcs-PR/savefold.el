@@ -76,7 +76,6 @@ This also saves the modification time of the file."
     (savefold-utils--unhook-standard-hooks 'outline
                                            '(outline-mode outline-minor-mode)
                                            'savefold-outline--recover-folds
-                                           'savefold-outline--save-folds
                                            'savefold-outline--bufferp)))
 
 (provide 'savefold-outline)

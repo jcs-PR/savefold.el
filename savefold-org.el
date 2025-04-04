@@ -192,7 +192,6 @@ invisibility spec, but only the invisibility specs exclusive to org-mode:
     (savefold-utils--unhook-standard-hooks 'org
                                            '(org-mode)
                                            'savefold-org--recover-folds
-                                           'savefold-org--save-folds
                                            'savefold-org--bufferp)))
 
 (provide 'savefold-org)

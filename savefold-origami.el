@@ -72,7 +72,6 @@
     (savefold-utils--unhook-standard-hooks 'origami
                                            '(origami-mode)
                                            'savefold-origami--recover-folds
-                                           'savefold-origami--save-folds
                                            'savefold-origami--bufferp)))
 
 (provide 'savefold-origami)

@@ -80,7 +80,6 @@
      'hideshow
      '(hs-minor-mode)
      'savefold-hideshow--recover-folds
-     'savefold-hideshow--save-folds
      'savefold-hideshow--bufferp)))
 
 (provide 'savefold-hideshow)

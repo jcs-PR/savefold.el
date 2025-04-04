@@ -193,7 +193,6 @@ current buffer."
 (defmacro savefold-utils--unhook-standard-hooks (backend
                                                  modes
                                                  recover-folds
-                                                 save-folds
                                                  backend-bufferp)
   "Undo the standard hooks for BACKEND."
   (savefold-utils--with-standard-functions (eval backend) (eval modes)
