@@ -1,19 +1,25 @@
 * savefold.el [[https://github.com/jcfk/savefold.el/actions/workflows/test.yml][file:https://github.com/jcfk/savefold.el/actions/workflows/test.yml/badge.svg]]
 
 This package is a family of global minor modes that persist folds made by
-various existing overlay-based folding systems, saving them to the disk and
-reapplying upon file open. Currently supported:
+various existing (mostly) overlay-based folding systems, saving them to the disk
+and reapplying upon file open. Currently supported:
 
 - [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Outline-Mode.html][outline-mode]] / [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Outline-Minor-Mode.html][outline-minor-mode]]
 - [[https://orgmode.org/][org-mode]]
 - [[https://github.com/gregsexton/origami.el][origami.el]]
+- [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Hideshow.html][hideshow]]
+
+Rationale: there are billions of different types of folds in emacs, and very few
+of the packages implement persistence. It makes sense for fold persistence to be
+abstracted out into a separate package, both for economic reasons and for
+consistency of usage.
 
 ** Usage
 
 #+begin_src elisp
 (use-package savefold
   :init
-  (setq savefold-backends '(outline org origami))
+  (setq savefold-backends '(outline org origami hideshow))
   (setq savefold-directory (locate-user-emacs-file "savefold"))  ;; default
 
   :config
