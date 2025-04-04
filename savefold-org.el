@@ -74,7 +74,7 @@ reason for this to be non-nil."
         (org-babel-hide-result-toggle-maybe)))
      (t (org-flag-region start end t spec)))))
 
-;;; Old-fashioned folding
+;;;; Old-fashioned folding
 
 (defvar savefold-org--old-fashioned-folds-attr 'savefold-org-old-fashioned-folds)
 
@@ -120,7 +120,7 @@ invisibility spec, but only the invisibility specs exclusive to org-mode:
   (savefold-utils--set-file-attr-modtime)
   (savefold-utils--write-out-file-attrs))
 
-;;; Current folding
+;;;; Current folding
 
 (defvar savefold-org--text-prop-folds-attr 'savefold-org-text-prop-folds)
 
@@ -183,6 +183,7 @@ invisibility spec, but only the invisibility specs exclusive to org-mode:
   "Toggle global persistence for org-mode folds."
   :global t
   :init-value nil
+  :group 'savefold
   (if savefold-org-mode
       (savefold-utils--set-up-standard-hooks 'org
                                              '(org-mode)

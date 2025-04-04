@@ -69,6 +69,7 @@
   "Toggle global persistence of hideshow folds."
   :global t
   :init-value nil
+  :group 'savefold
   (if savefold-hideshow-mode
       (savefold-utils--set-up-standard-hooks
        'hideshow

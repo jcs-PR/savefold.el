@@ -67,6 +67,7 @@ This also saves the modification time of the file."
   "Toggle global persistence for outline-mode/outline-minor-mode folds."
   :global t
   :init-value nil
+  :group 'savefold
   (if savefold-outline-mode
       (savefold-utils--set-up-standard-hooks 'outline
                                              '(outline-mode outline-minor-mode)

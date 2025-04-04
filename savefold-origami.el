@@ -63,6 +63,7 @@
   "Toggle global persistence for origami-mode folds."
   :global t
   :init-value nil
+  :group 'savefold
   (if savefold-origami-mode
       (savefold-utils--set-up-standard-hooks 'origami
                                              '(origami-mode)

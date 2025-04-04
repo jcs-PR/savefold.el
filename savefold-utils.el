@@ -26,6 +26,8 @@
 
 ;;; Code:
 
+(require 'savefold)
+
 (defvar savefold-utils--fpath-to-attr-table (make-hash-table :test 'equal)
   "Hash table mapping file paths to file attribute hash tables.")
 
