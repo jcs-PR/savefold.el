@@ -49,6 +49,10 @@
 (require 'savefold-utils)
 (require 'savefold-outline)
 
+(defvar org-fold-core-style)  ;; Missing in Emacs 28
+(declare-function org-fold-get-regions "ext:org-fold.el")  ;; Missing in Emacs 28
+(declare-function org-fold-region "ext:org-fold.el")  ;; Missing in Emacs 28
+
 (defcustom savefold-org-inhibit-outline-integration nil
   "If non-nil, do not automatically run outline-mode backend functions.
 
