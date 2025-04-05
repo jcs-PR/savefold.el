@@ -30,7 +30,7 @@ Notes:
 
 - Folding systems which are not a part of Emacs (eg. origami) have to be
   installed separately, if their savefold backend is to be used.
-- **For org**: setting ~org-startup-folded~ to ~'showeverything~ is recommended
+- *For org:* setting ~org-startup-folded~ to ~'showeverything~ is recommended
   for proper support.
 
 Configuration:
