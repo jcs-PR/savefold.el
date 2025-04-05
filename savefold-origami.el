@@ -26,8 +26,9 @@
 
 ;;; Code:
 
-(require 'origami)
 (require 'savefold-utils)
+
+(declare-function origami-close-node "ext:origami" (buffer point))  ;; Provided by origami
 
 (defvar savefold-origami--folds-attr 'savefold-origami-folds)
 
@@ -65,11 +66,13 @@
   :init-value nil
   :group 'savefold
   (if savefold-origami-mode
-      (savefold-utils--set-up-standard-hooks 'origami
-                                             '(origami-mode)
-                                             'savefold-origami--recover-folds
-                                             'savefold-origami--save-folds
-                                             'savefold-origami--bufferp)
+      (progn
+        (savefold-utils--require 'origami)
+        (savefold-utils--set-up-standard-hooks 'origami
+                                               '(origami-mode)
+                                               'savefold-origami--recover-folds
+                                               'savefold-origami--save-folds
+                                               'savefold-origami--bufferp))
     (savefold-utils--unhook-standard-hooks 'origami
                                            '(origami-mode)
                                            'savefold-origami--recover-folds

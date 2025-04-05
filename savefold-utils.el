@@ -211,6 +211,11 @@ current buffer."
        (savefold-utils--mapc-buffers
         ',unhook-save-on-kill-buffer ,backend-bufferp))))
 
+(defmacro savefold-utils--require (feature)
+  "Require FEATURE, giving error if it's not present."
+  `(unless (require ,feature nil t)
+     (error "savefold: Feature '%s' required, not present" ,feature)))
+
 (provide 'savefold-utils)
 
 ;;; savefold-utils.el ends here
