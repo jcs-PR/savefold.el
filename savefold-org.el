@@ -92,7 +92,7 @@ reason for this to be non-nil."
 
   ;; Overlay folds
   (mapc
-   'savefold-org--make-overlay-fold
+   #'savefold-org--make-overlay-fold
    (savefold-utils--get-file-attr savefold-org--old-fashioned-folds-attr)))
 
 (defun savefold-org--using-old-fashioned-foldsp ()
@@ -119,7 +119,7 @@ invisibility spec, but only the invisibility specs exclusive to org-mode:
    (mapcar
     (lambda (ov)
       `(,(overlay-start ov) ,(overlay-end ov) ,(overlay-get ov 'invisible)))
-    (savefold-utils--get-overlays 'savefold-org--old-fashioned-foldp)))
+    (savefold-utils--get-overlays #'savefold-org--old-fashioned-foldp)))
 
   (savefold-utils--set-file-attr-modtime)
   (savefold-utils--write-out-file-attrs))
@@ -151,7 +151,7 @@ invisibility spec, but only the invisibility specs exclusive to org-mode:
 
      ;; Recover overlay folds
      (mapc
-      'savefold-org--make-overlay-fold
+      #'savefold-org--make-overlay-fold
       (savefold-utils--get-file-attr savefold-org--overlay-folds-attr)))))
 
 (defun savefold-org--overlay-foldp (ov)
@@ -175,7 +175,7 @@ invisibility spec, but only the invisibility specs exclusive to org-mode:
        (mapcar
         (lambda (ov)
           `(,(overlay-start ov) ,(overlay-end ov) ,(overlay-get ov 'invisible)))
-        (savefold-utils--get-overlays 'savefold-org--overlay-foldp)))
+        (savefold-utils--get-overlays #'savefold-org--overlay-foldp)))
 
       (savefold-utils--set-file-attr-modtime)
       (savefold-utils--write-out-file-attrs))))

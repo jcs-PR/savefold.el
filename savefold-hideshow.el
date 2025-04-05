@@ -57,8 +57,8 @@
     (savefold-utils--set-file-attr
      savefold-hideshow--folds-attr
      (mapcar
-      'savefold-hideshow--get-fold-data
-      (savefold-utils--get-overlays 'savefold-hideshow--hideshow-foldp)))
+      #'savefold-hideshow--get-fold-data
+      (savefold-utils--get-overlays #'savefold-hideshow--hideshow-foldp)))
     (savefold-utils--set-file-attr-modtime)
     (savefold-utils--write-out-file-attrs)))
 

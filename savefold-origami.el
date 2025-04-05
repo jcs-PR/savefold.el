@@ -52,8 +52,8 @@
     (savefold-utils--set-file-attr
      savefold-origami--folds-attr
      (mapcar
-      'overlay-start
-      (savefold-utils--get-overlays 'savefold-origami--origami-foldp)))
+      #'overlay-start
+      (savefold-utils--get-overlays #'savefold-origami--origami-foldp)))
     (savefold-utils--set-file-attr-modtime)
     (savefold-utils--write-out-file-attrs)))
 

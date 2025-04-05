@@ -30,7 +30,7 @@
 
 (declare-function readablep "subr.el" (object) t)  ;; Missing in Emacs 28
 
-(defvar savefold-utils--fpath-to-attr-table (make-hash-table :test 'equal)
+(defvar savefold-utils--fpath-to-attr-table (make-hash-table :test #'equal)
   "Hash table mapping file paths to file attribute hash tables.")
 
 (defun savefold-utils--get-attr-table-fpath (fpath)
@@ -63,8 +63,8 @@ If no attr table file exists, return a new hash table."
   "Return attribute ATTR for the current file.
 
 Use FPATH instead if non-nil."
-  (when-let ((fpath (or fpath
-                        (and (buffer-file-name) (expand-file-name (buffer-file-name))))))
+  (when-let ((fpath
+              (or fpath (and (buffer-file-name) (expand-file-name (buffer-file-name))))))
     (gethash attr (savefold-utils--get-file-attr-table fpath))))
 
 (defun savefold-utils--set-file-attr (attr value &optional fpath)
@@ -74,8 +74,8 @@ Make sure to `savefold-utils--write-out-file-attrs' after each batch of changes
 to save them to the disk.
 
 Use FPATH instead of the current buffer file if non-nil."
-  (when-let ((fpath (or fpath
-                        (and (buffer-file-name) (expand-file-name (buffer-file-name))))))
+  (when-let ((fpath
+              (or fpath (and (buffer-file-name) (expand-file-name (buffer-file-name))))))
     ;; Use compat for 28.2?
     (if (or (version< emacs-version "29.1")
             (readablep value))
@@ -86,8 +86,8 @@ Use FPATH instead of the current buffer file if non-nil."
   "Write attr hash table for the current file to the disk.
 
 Use FPATH instead if non-nil."
-  (when-let ((fpath (or fpath
-                        (and (buffer-file-name) (expand-file-name (buffer-file-name))))))
+  (when-let ((fpath
+              (or fpath (and (buffer-file-name) (expand-file-name (buffer-file-name))))))
     (when (not (file-exists-p savefold-directory))
       (make-directory savefold-directory))
     (with-temp-file (savefold-utils--get-attr-table-fpath fpath)
@@ -184,15 +184,15 @@ current buffer."
           (add-hook mode-hook ,recover-folds)
 
           ;; Save folds on file close
-          (add-hook mode-hook ',set-up-save-on-kill-buffer))
+          (add-hook mode-hook #',set-up-save-on-kill-buffer))
         ',mode-hooks)
 
        ;; Save folds on emacs shutdown
-       (add-hook 'kill-emacs-hook ',save-all-buffers-folds)
+       (add-hook 'kill-emacs-hook #',save-all-buffers-folds)
 
        ;; Set up save folds on file close for existing buffers
        (savefold-utils--mapc-buffers
-        ',set-up-save-on-kill-buffer ,backend-bufferp))))
+        #',set-up-save-on-kill-buffer ,backend-bufferp))))
 
 (defmacro savefold-utils--unhook-standard-hooks (backend
                                                  modes
@@ -204,12 +204,12 @@ current buffer."
        (mapc
         (lambda (mode-hook)
           (remove-hook mode-hook ,recover-folds)
-          (remove-hook mode-hook ',set-up-save-on-kill-buffer))
+          (remove-hook mode-hook #',set-up-save-on-kill-buffer))
         ',mode-hooks)
 
-       (remove-hook 'kill-emacs-hook ',save-all-buffers-folds)
+       (remove-hook 'kill-emacs-hook #',save-all-buffers-folds)
        (savefold-utils--mapc-buffers
-        ',unhook-save-on-kill-buffer ,backend-bufferp))))
+        #',unhook-save-on-kill-buffer ,backend-bufferp))))
 
 (defmacro savefold-utils--require (feature)
   "Require FEATURE, giving error if it's not present."
