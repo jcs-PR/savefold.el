@@ -42,8 +42,12 @@ Configuration:
 
 ** Development
 
+Please feel free to contribute support for other folding systems. Suggestions
+and comments are also very welcome.
+
 - Savefold uses [[https://emacs-eask.github.io/][Eask]] for environment management and [[https://github.com/jorgenschaefer/emacs-buttercup][Buttercup]] for testing.
 - Savefold supports Emacs versions 28, 29, and 30.
+- If you're adding new functionality, please also create the relevant tests.
 
 Before sending a PR, ensure (within reason):
 
@@ -51,5 +55,3 @@ Before sending a PR, ensure (within reason):
 2. Compilation without warnings: ~eask compile~
 3. Declarations are true: ~eask lint declare~
 4. Package is well behaved: ~eask lint package~
-
-If you're adding new functionality, please also create the relevant tests.
