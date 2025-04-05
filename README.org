@@ -5,7 +5,7 @@ various existing (mostly) overlay-based folding systems, saving them to the disk
 and reapplying upon file open. Currently supported:
 
 - [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Outline-Mode.html][outline-mode]] / [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Outline-Minor-Mode.html][outline-minor-mode]]
-- [[https://orgmode.org/][org-mode]]
+- [[https://orgmode.org/][org-mode]] (including org 9.6+ text prop folds)
 - [[https://github.com/gregsexton/origami.el][origami.el]]
 - [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Hideshow.html][hideshow]]
 
@@ -44,6 +44,8 @@ Configuration:
 
 Please feel free to contribute support for other folding systems. Suggestions
 and comments are also very welcome.
+
+Development guidelines:
 
 - Savefold uses [[https://emacs-eask.github.io/][Eask]] for environment management and [[https://github.com/jorgenschaefer/emacs-buttercup][Buttercup]] for testing.
 - Savefold supports Emacs versions 28, 29, and 30.
