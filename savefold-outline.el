@@ -63,6 +63,7 @@ This also saves the modification time of the file."
   (or (derived-mode-p 'outline-mode)
       (bound-and-true-p outline-minor-mode)))
 
+;;;###autoload
 (define-minor-mode savefold-outline-mode
   "Toggle global persistence for outline-mode/outline-minor-mode folds."
   :global t

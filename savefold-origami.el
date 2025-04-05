@@ -60,6 +60,7 @@
 (defun savefold-origami--bufferp ()
   (bound-and-true-p origami-mode))
 
+;;;###autoload
 (define-minor-mode savefold-origami-mode
   "Toggle global persistence for origami-mode folds."
   :global t

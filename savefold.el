@@ -1,4 +1,4 @@
-;;; savefold.el --- persistence for various folding systems -*- lexical-binding: t; -*-
+;;; savefold.el --- Persistence for various folding systems -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2025 Jacob Fong
 ;; Author: Jacob Fong <jacobcfong@gmail.com>

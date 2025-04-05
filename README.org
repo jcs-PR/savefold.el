@@ -28,8 +28,10 @@ consistency of usage.
 
 Notes:
 
-- Setting ~org-startup-folded~ to ~'showeverything~ is recommended for
-  proper org support.
+- Folding systems which are not a part of Emacs (eg. origami) have to be
+  installed separately, if their savefold backend is to be used.
+- **For org**: setting ~org-startup-folded~ to ~'showeverything~ is recommended
+  for proper support.
 
 Configuration:
 
@@ -40,6 +42,14 @@ Configuration:
 
 ** Development
 
-Savefold uses [[https://emacs-eask.github.io/][Eask]] for environment management and [[https://github.com/jorgenschaefer/emacs-buttercup][Buttercup]] for testing.
+- Savefold uses [[https://emacs-eask.github.io/][Eask]] for environment management and [[https://github.com/jorgenschaefer/emacs-buttercup][Buttercup]] for testing.
+- Savefold supports Emacs versions 28, 29, and 30.
 
-Emacs version support: 28, 29, 30
+Before sending a PR, ensure:
+
+1. All tests pass: ~eask test buttercup~
+2. Compilation without warnings: ~eask compile~
+3. Declarations are true: ~eask lint declare~
+4. Package is well behaved: ~eask lint package~ (doesn't need to be perfect)
+
+If you're adding new functionality, please also create the relevant tests.

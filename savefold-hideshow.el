@@ -65,6 +65,7 @@
 (defun savefold-hideshow--bufferp ()
   (bound-and-true-p hs-minor-mode))
 
+;;;###autoload
 (define-minor-mode savefold-hideshow-mode
   "Toggle global persistence of hideshow folds."
   :global t

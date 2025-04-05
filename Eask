@@ -1,6 +1,6 @@
 (package "savefold"
          "0.0.1"
-         "persistence for various folding systems")
+         "Persistence for various folding systems")
 
 (website-url "https://github.com/jcfk/savefold.el")
 (keywords "convenience")

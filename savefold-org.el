@@ -183,6 +183,7 @@ invisibility spec, but only the invisibility specs exclusive to org-mode:
 (defun savefold-org--bufferp ()
   (derived-mode-p 'org-mode))
 
+;;;###autoload
 (define-minor-mode savefold-org-mode
   "Toggle global persistence for org-mode folds."
   :global t
