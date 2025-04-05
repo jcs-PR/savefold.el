@@ -45,11 +45,11 @@ Configuration:
 - Savefold uses [[https://emacs-eask.github.io/][Eask]] for environment management and [[https://github.com/jorgenschaefer/emacs-buttercup][Buttercup]] for testing.
 - Savefold supports Emacs versions 28, 29, and 30.
 
-Before sending a PR, ensure:
+Before sending a PR, ensure (within reason):
 
 1. All tests pass: ~eask test buttercup~
 2. Compilation without warnings: ~eask compile~
 3. Declarations are true: ~eask lint declare~
-4. Package is well behaved: ~eask lint package~ (doesn't need to be perfect)
+4. Package is well behaved: ~eask lint package~
 
 If you're adding new functionality, please also create the relevant tests.
