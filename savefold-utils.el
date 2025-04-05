@@ -102,9 +102,9 @@ Must `savefold-utils--write-out-file-attrs' afterwards."
   (savefold-utils--set-file-attr 'savefold-modtime (visited-file-modtime)))
 
 (defun savefold-utils--file-recently-modifiedp ()
-  "The current file has modtime recenter than the 'savefold-modtime attr.
+  "The current file has modtime recenter than the \\='savefold-modtime attr.
 
-False if the current file doesn't have a 'savefold-modtime attr."
+False if the current file doesn't have a \\='savefold-modtime attr."
   (when-let ((saved-modtime (savefold-utils--get-file-attr 'savefold-modtime)))
     (< (float-time saved-modtime) (float-time (visited-file-modtime)))))
 

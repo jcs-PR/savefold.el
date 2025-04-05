@@ -61,7 +61,7 @@ some points, due to the special relationship between org-mode and
 outline-mode.
 
 A value of nil is required for folds created with `org-flag-region' with an
-'outline invisibility spec to be saved, for example. There is not really any
+\\='outline invisibility spec to be saved, for example. There is not really any
 reason for this to be non-nil."
   :type 'boolean
   :group 'savefold)
@@ -102,7 +102,7 @@ reason for this to be non-nil."
 (defun savefold-org--old-fashioned-foldp (ov)
   "Check whether OV is an overlay for an old fashioned org-mode fold.
 
-This does not include folds made with `org-flag-region' with an 'outline
+This does not include folds made with `org-flag-region' with an \\='outline
 invisibility spec, but only the invisibility specs exclusive to org-mode:
 `savefold-org--old-fashioned-fold-specs'."
   (memq (overlay-get ov 'invisible) savefold-org--old-fashioned-fold-specs))
