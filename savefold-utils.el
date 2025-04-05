@@ -28,7 +28,7 @@
 
 (require 'savefold)
 
-(declare-function readablep "subr.el" nil t)  ;; Missing in Emacs 28
+(declare-function readablep "subr.el" (object) t)  ;; Missing in Emacs 28
 
 (defvar savefold-utils--fpath-to-attr-table (make-hash-table :test 'equal)
   "Hash table mapping file paths to file attribute hash tables.")
