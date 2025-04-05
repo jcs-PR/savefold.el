@@ -28,7 +28,7 @@
 
 (require 'savefold-utils)
 
-(declare-function origami-close-node "ext:origami" (buffer point))  ;; Provided by origami
+(declare-function origami-close-node "ext:origami.el" (buffer point))  ;; Provided by origami
 
 (defvar savefold-origami--folds-attr 'savefold-origami-folds)
 
