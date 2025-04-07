@@ -53,7 +53,7 @@
 
 (defun savefold-hideshow--save-folds ()
   "Save hideshow fold data for the current buffer."
-  (when (not (buffer-modified-p))
+  (unless (buffer-modified-p)
     (savefold-utils--set-file-attr
      savefold-hideshow--folds-attr
      (mapcar
