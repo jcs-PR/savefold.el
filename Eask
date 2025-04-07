@@ -12,9 +12,13 @@
 
 (source "gnu")
 (source "melpa")
+(source "jcs-elpa")
 
 (depends-on "emacs" "28.1")
 (development
   (depends-on "buttercup")
-  (depends-on "origami"))
+  (depends-on "origami")
+  (depends-on "tree-sitter")
+  (depends-on "tree-sitter-langs")
+  (depends-on "ts-fold"))
 (load-paths "./tests")
