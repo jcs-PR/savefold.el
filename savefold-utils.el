@@ -179,6 +179,13 @@ current buffer."
          "Helper func from `savefold-utils--set-up-standard-hooks'."
          (savefold-utils--mapc-buffers ,save-folds ,backend-bufferp))
 
+       (declare-function
+        ,set-up-save-on-kill-buffer (format "savefold-%s" ,backend))
+       (declare-function
+        ,unhook-save-on-kill-buffer (format "savefold-%s" ,backend))
+       (declare-function
+        ,save-all-buffers-folds (format "savefold-%s" ,backend))
+
        (mapc
         (lambda (mode-hook)
           ;; Recover folds on file open

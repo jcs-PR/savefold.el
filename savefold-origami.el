@@ -62,7 +62,7 @@
 
 ;;;###autoload
 (define-minor-mode savefold-origami-mode
-  "Toggle global persistence for origami-mode folds."
+  "Toggle global persistence for `origami-mode' folds."
   :global t
   :init-value nil
   :group 'savefold
