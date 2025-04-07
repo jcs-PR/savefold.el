@@ -38,16 +38,17 @@
 
 This naively replaces path slashes with ! (/a/b/c -> !a!b!c) leading to a chance
 of collision."
-  (expand-file-name
-   (string-replace "/" "!" (expand-file-name fpath))
-   savefold-directory))
+  (let* ((fpath (expand-file-name fpath))
+         (fpath (string-replace "/" "!" fpath))
+         (fpath (string-replace ":" "!" fpath)))  ; For windows
+    (expand-file-name fpath savefold-directory)))
 
 (defun savefold-utils--get-file-attr-table (fpath)
   "Get the attribute hash table for file FPATH.
 
 If no attr table file exists, return a new hash table."
   (let ((attr-table (gethash fpath savefold-utils--fpath-to-attr-table)))
-    (when (not attr-table)
+    (unless attr-table
       (let ((attr-table-fpath (savefold-utils--get-attr-table-fpath fpath)))
         (if (file-exists-p attr-table-fpath)
             (setq attr-table
@@ -63,8 +64,8 @@ If no attr table file exists, return a new hash table."
   "Return attribute ATTR for the current file.
 
 Use FPATH instead if non-nil."
-  (when-let ((fpath
-              (or fpath (and (buffer-file-name) (expand-file-name (buffer-file-name))))))
+  (when-let* ((fpath
+               (or fpath (and (buffer-file-name) (expand-file-name (buffer-file-name))))))
     (gethash attr (savefold-utils--get-file-attr-table fpath))))
 
 (defun savefold-utils--set-file-attr (attr value &optional fpath)
@@ -74,8 +75,8 @@ Make sure to `savefold-utils--write-out-file-attrs' after each batch of changes
 to save them to the disk.
 
 Use FPATH instead of the current buffer file if non-nil."
-  (when-let ((fpath
-              (or fpath (and (buffer-file-name) (expand-file-name (buffer-file-name))))))
+  (when-let* ((fpath
+               (or fpath (and (buffer-file-name) (expand-file-name (buffer-file-name))))))
     ;; Use compat for 28.2?
     (if (or (version< emacs-version "29.1")
             (readablep value))
@@ -86,8 +87,8 @@ Use FPATH instead of the current buffer file if non-nil."
   "Write attr hash table for the current file to the disk.
 
 Use FPATH instead if non-nil."
-  (when-let ((fpath
-              (or fpath (and (buffer-file-name) (expand-file-name (buffer-file-name))))))
+  (when-let* ((fpath
+               (or fpath (and (buffer-file-name) (expand-file-name (buffer-file-name))))))
     (when (not (file-exists-p savefold-directory))
       (make-directory savefold-directory))
     (with-temp-file (savefold-utils--get-attr-table-fpath fpath)
@@ -105,7 +106,7 @@ Must `savefold-utils--write-out-file-attrs' afterwards."
   "The current file has modtime recenter than the \\='savefold-modtime attr.
 
 False if the current file doesn't have a \\='savefold-modtime attr."
-  (when-let ((saved-modtime (savefold-utils--get-file-attr 'savefold-modtime)))
+  (when-let* ((saved-modtime (savefold-utils--get-file-attr 'savefold-modtime)))
     (< (float-time saved-modtime) (float-time (visited-file-modtime)))))
 
 (defun savefold-utils--mapc-buffers (fun pred)
@@ -177,13 +178,6 @@ current buffer."
        (defun ,save-all-buffers-folds ()
          "Helper func from `savefold-utils--set-up-standard-hooks'."
          (savefold-utils--mapc-buffers ,save-folds ,backend-bufferp))
-
-       (declare-function
-        ,set-up-save-on-kill-buffer (format "savefold-%s" ,backend))
-       (declare-function
-        ,unhook-save-on-kill-buffer (format "savefold-%s" ,backend))
-       (declare-function
-        ,save-all-buffers-folds (format "savefold-%s" ,backend))
 
        (mapc
         (lambda (mode-hook)
