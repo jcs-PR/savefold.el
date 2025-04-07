@@ -28,7 +28,7 @@
 
 ;;; Commentary:
 
-;; Persistence for emacs folding systems. See github.com/jcfk/savefold.el for
+;; Persistence for Emacs folding systems. See github.com/jcfk/savefold.el for
 ;; more information.
 
 ;;; Code:
