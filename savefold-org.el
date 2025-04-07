@@ -54,7 +54,7 @@
 (declare-function org-fold-region "ext:org-fold.el")  ;; Missing in Emacs 28
 
 (defcustom savefold-org-inhibit-outline-integration nil
-  "If non-nil, do not automatically run `outline-mode' backend functions.
+  "If non-nil, do not automatically run outline-mode backend functions.
 
 By default, the outline backend is manually integrated with the org backend at
 some points, due to the special relationship between org-mode and
@@ -100,7 +100,7 @@ reason for this to be non-nil."
   (or (version< org-version "9.6") (eq org-fold-core-style 'overlays)))
 
 (defun savefold-org--old-fashioned-foldp (ov)
-  "Check whether OV is an overlay for an old fashioned `org-mode' fold.
+  "Check whether OV is an overlay for an old fashioned org-mode fold.
 
 This does not include folds made with `org-flag-region' with an \\='outline
 invisibility spec, but only the invisibility specs exclusive to org-mode:
@@ -155,7 +155,7 @@ invisibility spec, but only the invisibility specs exclusive to org-mode:
       (savefold-utils--get-file-attr savefold-org--overlay-folds-attr)))))
 
 (defun savefold-org--overlay-foldp (ov)
-  "Check whether OV is an overlay for an `org-mode' fold."
+  "Check whether OV is an overlay for an org-mode fold."
   (memq (overlay-get ov 'invisible) savefold-org--overlay-fold-specs))
 
 (defun savefold-org--save-folds ()
@@ -185,7 +185,7 @@ invisibility spec, but only the invisibility specs exclusive to org-mode:
 
 ;;;###autoload
 (define-minor-mode savefold-org-mode
-  "Toggle global persistence for `org-mode' folds."
+  "Toggle global persistence for org-mode folds."
   :global t
   :init-value nil
   :group 'savefold

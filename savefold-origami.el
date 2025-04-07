@@ -48,7 +48,7 @@
 
 (defun savefold-origami--save-folds ()
   "Save origami fold data for the current buffer."
-  (when (not (buffer-modified-p))
+  (unless (buffer-modified-p)
     (savefold-utils--set-file-attr
      savefold-origami--folds-attr
      (mapcar
@@ -62,7 +62,7 @@
 
 ;;;###autoload
 (define-minor-mode savefold-origami-mode
-  "Toggle global persistence for `origami-mode' folds."
+  "Toggle global persistence for origami-mode folds."
   :global t
   :init-value nil
   :group 'savefold

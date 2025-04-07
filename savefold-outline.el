@@ -50,7 +50,7 @@
 
 This also saves the modification time of the file."
   ;; Assume this means the buffer reflects the actual file state
-  (when (not (buffer-modified-p))
+  (unless (buffer-modified-p)
     (savefold-utils--set-file-attr
      savefold-outline--folds-attr
      (mapcar
