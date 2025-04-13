@@ -76,7 +76,9 @@ reason for this to be non-nil."
       (save-excursion
         (goto-char start)
         (org-babel-hide-result-toggle-maybe)))
-     (t (org-flag-region start end t spec)))))
+     ;; org-flag-region is obsolete as of emacs 29/org 9.6
+     (t (with-no-warnings
+          (org-flag-region start end t spec))))))
 
 ;;;; Old-fashioned folding
 
