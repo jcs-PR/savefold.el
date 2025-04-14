@@ -21,5 +21,6 @@
   (depends-on "tree-sitter")
   (depends-on "tree-sitter-langs")
   (depends-on "ts-fold")
-  (depends-on "yafolding"))
+  (depends-on "yafolding")
+  (depends-on "treesit-fold"))
 (load-paths "./tests")
