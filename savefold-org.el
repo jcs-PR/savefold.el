@@ -138,7 +138,7 @@ invisibility spec, but only the invisibility specs exclusive to org-mode:
 
 (defun savefold-org--make-overlay-fold (fold-data)
   "Make overlay fold from FOLD-DATA."
-  (cl-destructuring-bind (start end spec) fold-data
+  (cl-destructuring-bind (start _ spec) fold-data  ;; Change "_" to "end" if needed
     (cond
      ((eq spec 'org-babel-hide-result)
       (save-excursion
