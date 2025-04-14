@@ -20,5 +20,6 @@
   (depends-on "origami")
   (depends-on "tree-sitter")
   (depends-on "tree-sitter-langs")
-  (depends-on "ts-fold"))
+  (depends-on "ts-fold")
+  (depends-on "yafolding"))
 (load-paths "./tests")
