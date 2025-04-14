@@ -53,6 +53,8 @@
 (defalias 'savefold-org--org-fold-get-regions 'org-fold-get-regions)  ;: Missing in Emacs 28
 (defalias 'savefold-org--org-fold-region 'org-fold-region)  ;; Missing in Emacs 28
 
+;;;; Old-fashioned folding
+
 (defcustom savefold-org-inhibit-outline-integration nil
   "If non-nil, do not automatically run `outline-mode' backend functions.
 
@@ -66,8 +68,16 @@ reason for this to be non-nil."
   :type 'boolean
   :group 'savefold)
 
-(defun savefold-org--make-overlay-fold (fold-data)
-  "Make overlay-based fold from FOLD-DATA."
+(defvar savefold-org--old-fashioned-folds-attr 'savefold-org-old-fashioned-folds)
+
+(defvar savefold-org--old-fashioned-fold-specs '(org-hide-block org-babel-hide-result))
+
+(defun savefold-org--using-old-fashioned-foldsp ()
+  "Check whether using org<9.6 overlay-based folds or new text prop folds."
+  (or (version< org-version "9.6") (eq org-fold-core-style 'overlays)))
+
+(defun savefold-org--old-fashioned-make-overlay-fold (fold-data)
+  "For old-fashioned folds: make overlay-based org fold from FOLD-DATA."
   (let ((start (car fold-data))
         (end (cadr fold-data))
         (spec (caddr fold-data)))
@@ -77,16 +87,9 @@ reason for this to be non-nil."
         (goto-char start)
         (org-babel-hide-result-toggle-maybe)))
      ;; org-flag-region is obsolete as of emacs 29/org 9.6
-     (t (with-no-warnings
-          (org-flag-region start end t spec))))))
+     (t (with-no-warnings (org-flag-region start end t spec))))))
 
-;;;; Old-fashioned folding
-
-(defvar savefold-org--old-fashioned-folds-attr 'savefold-org-old-fashioned-folds)
-
-(defvar savefold-org--old-fashioned-fold-specs '(org-hide-block org-babel-hide-result))
-
-(defun savefold-org--recover-old-fashioned-folds ()
+(defun savefold-org--old-fashioned-recover-folds ()
   ;; Get outline folds manually if necessary
   (when (and (not savefold-org-inhibit-outline-integration)
              (not savefold-outline-mode))
@@ -94,22 +97,18 @@ reason for this to be non-nil."
 
   ;; Overlay folds
   (mapc
-   #'savefold-org--make-overlay-fold
+   #'savefold-org--old-fashioned-make-overlay-fold
    (savefold-utils--get-file-attr savefold-org--old-fashioned-folds-attr)))
 
-(defun savefold-org--using-old-fashioned-foldsp ()
-  "Check whether using org<9.6 overlay-based folds or new text prop folds."
-  (or (version< org-version "9.6") (eq org-fold-core-style 'overlays)))
-
 (defun savefold-org--old-fashioned-foldp (ov)
-  "Check whether OV is an overlay for an old fashioned `org-mode' fold.
+  "For old-fashioned folds: check whether OV is an overlay for an `org-mode' fold.
 
 This does not include folds made with `org-flag-region' with an \\='outline
 invisibility spec, but only the invisibility specs exclusive to org-mode:
 `savefold-org--old-fashioned-fold-specs'."
   (memq (overlay-get ov 'invisible) savefold-org--old-fashioned-fold-specs))
 
-(defun savefold-org--save-old-fashioned-folds ()
+(defun savefold-org--old-fashioned-save-folds ()
   ;; Save outline folds manually if necessary
   (when (and (not savefold-org-inhibit-outline-integration)
              (not savefold-outline-mode))
@@ -137,11 +136,20 @@ invisibility spec, but only the invisibility specs exclusive to org-mode:
 
 (defvar savefold-org--overlay-fold-specs '(org-babel-hide-result))
 
+(defun savefold-org--make-overlay-fold (fold-data)
+  "Make overlay fold from FOLD-DATA."
+  (cl-destructuring-bind (start end spec) fold-data
+    (cond
+     ((eq spec 'org-babel-hide-result)
+      (save-excursion
+        (goto-char start)
+        (org-babel-hide-result-toggle-maybe))))))
+
 (defun savefold-org--recover-folds ()
   "Read and apply saved org fold data for the current buffer."
   (savefold-utils--unless-file-recently-modified
    (if (savefold-org--using-old-fashioned-foldsp)
-       (savefold-org--recover-old-fashioned-folds)
+       (savefold-org--old-fashioned-recover-folds)
      ;; Recover text prop folds
      (mapc
       (lambda (fold)
@@ -164,7 +172,7 @@ invisibility spec, but only the invisibility specs exclusive to org-mode:
   "Save org fold data for the current buffer."
   (when (not (buffer-modified-p))
     (if (savefold-org--using-old-fashioned-foldsp)
-        (savefold-org--save-old-fashioned-folds)
+        (savefold-org--old-fashioned-save-folds)
 
       ;; Save text property folds
       (savefold-utils--set-file-attr
