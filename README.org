@@ -56,5 +56,5 @@ Before sending a PR, ensure (within reason):
 
 1. All tests pass: ~eask test buttercup~
 2. Compilation without warnings: ~eask compile~
-3. Declarations are true: ~eask lint declare~
-4. Package is well behaved: ~eask lint package~
+3. check-declare is clean: ~eask lint declare~
+4. package-lint is clean: ~eask lint package~

@@ -50,8 +50,8 @@
 (require 'savefold-outline)
 
 (defvar org-fold-core-style)  ;; Missing in Emacs 28
-(declare-function org-fold-get-regions "ext:org-fold.el")  ;; Missing in Emacs 28
-(declare-function org-fold-region "ext:org-fold.el")  ;; Missing in Emacs 28
+(defalias 'savefold-org--org-fold-get-regions 'org-fold-get-regions)  ;: Missing in Emacs 28
+(defalias 'savefold-org--org-fold-region 'org-fold-region)  ;; Missing in Emacs 28
 
 (defcustom savefold-org-inhibit-outline-integration nil
   "If non-nil, do not automatically run `outline-mode' backend functions.
@@ -148,7 +148,7 @@ invisibility spec, but only the invisibility specs exclusive to org-mode:
         (let ((start (car fold))
               (end (cadr fold))
               (spec (caddr fold)))
-          (org-fold-region start end t spec)))
+          (savefold-org--org-fold-region start end t spec)))
       (savefold-utils--get-file-attr savefold-org--text-prop-folds-attr))
 
      ;; Recover overlay folds
@@ -169,7 +169,7 @@ invisibility spec, but only the invisibility specs exclusive to org-mode:
       ;; Save text property folds
       (savefold-utils--set-file-attr
        savefold-org--text-prop-folds-attr
-       (org-fold-get-regions :specs savefold-org--text-prop-fold-specs))
+       (savefold-org--org-fold-get-regions :specs savefold-org--text-prop-fold-specs))
 
       ;; Save overlay folds
       (savefold-utils--set-file-attr
