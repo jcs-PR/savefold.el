@@ -8,9 +8,8 @@ and reapplying upon file open. Currently supported:
 - [[https://orgmode.org/][org-mode]] (including org 9.6+ text prop folds)
 - [[https://github.com/gregsexton/origami.el][origami.el]]
 - [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Hideshow.html][hideshow]]
-- [[https://github.com/emacs-tree-sitter/ts-fold][ts-fold]]
+- [[https://github.com/emacs-tree-sitter/ts-fold][ts-fold]] / [[https://github.com/emacs-tree-sitter/treesit-fold][treesit-fold]]
 - [[https://github.com/zenozeng/yafolding.el][yafolding]]
-- [[https://github.com/emacs-tree-sitter/treesit-fold][treesit-fold]]
 
 Rationale: there are billions of different types of folds in emacs, and very few
 of the packages implement persistence. It makes sense for fold persistence to be

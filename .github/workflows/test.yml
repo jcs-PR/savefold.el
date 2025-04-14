@@ -18,5 +18,9 @@ jobs:
           version: snapshot
       - name: Run tests
         run: |
-          eask install-deps --dev
+          # treesit-fold is a dev dependency, but not installable under Emacs
+          # 28. I believe Eask will have a nonzero exit code which needs to be
+          # caught. Do not enable pipefail in the github actions shell or this
+          # solution will break.
+          eask install-deps --dev || echo "caught"
           eask test buttercup
