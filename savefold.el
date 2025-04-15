@@ -51,7 +51,7 @@ See `savefold--all-backends' for a list of possible values."
 
 ;; https://github.com/gregsexton/origami.el/issues/120
 (defvar savefold--all-backends (append
-                                '(outline org hideshow ts-fold yafolding)
+                                '(outline org hideshow ts-fold yafolding hide-ifdef)
                                 (when (version< emacs-version "30") '(origami))
                                 (when (version< "29" emacs-version) '(treesit-fold)))
   "List of supported folding backends.")

@@ -1,4 +1,4 @@
-;;; test-savefold-yafolding.el --- savefold-yafolding.el tests -*- lexical-binding: t; -*-
+;;; test-savefold-hide-ifdef.el --- savefold-hide-ifdef.el tests -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2025 Jacob Fong
 
@@ -22,22 +22,22 @@
 
 ;;; Commentary:
 
-;; savefold-yafolding.el tests
+;; savefold-hide-ifdef.el tests
 
 ;;; Code:
 
-(require 'savefold-yafolding)
+(require 'savefold-hide-ifdef)
 (require 'savefold-test-utils)
 
-(describe "savefold-yafolding-mode"
+(describe "savefold-hide-ifdef-mode"
   :var* ((source-fpath
-          (expand-file-name "fixtures/yafolding/eight-queens.py" savefold-test-utils--dir))
+          (expand-file-name "fixtures/hide-ifdef/test.c" savefold-test-utils--dir))
          (attr-fpath
-          (expand-file-name "fixtures/yafolding/attr-table" savefold-test-utils--dir)))
+          (expand-file-name "fixtures/hide-ifdef/attr-table" savefold-test-utils--dir)))
 
   (describe "when on"
     (before-all
-      (savefold-yafolding-mode 1))
+      (savefold-hide-ifdef-mode 1))
 
     (it "does not recover folds upon file open if file was recently modified"
       (savefold-test-utils--with-temp-savefold-environment source-fpath attr-fpath
@@ -45,55 +45,55 @@
         (savefold-utils--write-out-file-attrs temp-source-fpath)
 
         (savefold-test-utils--with-open-file temp-source-fpath
-          (yafolding-mode 1)
+          (hide-ifdef-mode 1)
           (expect
-           (not (savefold-utils--get-overlays 'savefold-yafolding--yafolding-foldp))))))
+           (not (savefold-utils--get-overlays 'savefold-hide-ifdef--hide-ifdef-foldp))))))
 
     (it "recovers folds upon file open"
       (savefold-test-utils--with-temp-savefold-environment source-fpath attr-fpath
         (savefold-test-utils--with-open-file temp-source-fpath
-          (yafolding-mode 1)
+          (hide-ifdef-mode 1)
           (expect
            (savefold-test-utils--sets-equalp
             (mapcar
-             'overlay-start
-             (savefold-utils--get-overlays 'savefold-yafolding--yafolding-foldp))
-            (savefold-utils--get-file-attr savefold-yafolding--folds-attr))))))
+             (lambda (ov) `(,(overlay-start ov) ,(overlay-end ov)))
+             (savefold-utils--get-overlays 'savefold-hide-ifdef--hide-ifdef-foldp))
+            (savefold-utils--get-file-attr savefold-hide-ifdef--folds-attr))))))
 
     (it "saves folds upon file close"
       (savefold-test-utils--with-temp-savefold-environment source-fpath attr-fpath
         (savefold-test-utils--with-open-file temp-source-fpath
-          (yafolding-mode 1)
-          (goto-char 111)
-          (yafolding-show-element)
-          (goto-char 404)
-          (yafolding-hide-element))
+          (hide-ifdef-mode 1)
+          (push-mark)
+          (goto-char 197)
+          (show-ifdef-block)
+          (goto-char 293)
+          (hide-ifdef-block))
 
         (expect
          (savefold-test-utils--sets-equalp
-          (savefold-utils--get-file-attr savefold-yafolding--folds-attr temp-source-fpath)
-          '(100 408))))))
+          (savefold-utils--get-file-attr savefold-hide-ifdef--folds-attr temp-source-fpath)
+          '((137 182) (310 348)))))))
 
   (describe "when turned back off"
     (before-all
-      (savefold-yafolding-mode -1))
+      (savefold-hide-ifdef-mode -1))
 
     (it "does not recover folds upon file open"
       (savefold-test-utils--with-temp-savefold-environment source-fpath attr-fpath
         (savefold-test-utils--with-open-file temp-source-fpath
-          (yafolding-mode 1)
+          (hide-ifdef-mode 1)
           (expect
-           (not (savefold-utils--get-overlays 'savefold-yafolding--yafolding-foldp))))))
+           (not (savefold-utils--get-overlays 'savefold-hide-ifdef--hide-ifdef-foldp))))))
 
     (it "does not save folds upon file close"
       (savefold-test-utils--with-temp-savefold-environment source-fpath attr-fpath
         (savefold-test-utils--with-open-file temp-source-fpath
-          (yafolding-mode 1))
+          (hide-ifdef-mode 1))
 
         (expect
          (savefold-test-utils--sets-equalp
-          (savefold-utils--get-file-attr savefold-yafolding--folds-attr temp-source-fpath)
-          '(100 132)))))))
+          (savefold-utils--get-file-attr savefold-hide-ifdef--folds-attr temp-source-fpath)
+          '((202 245) (137 182))))))))
 
-;;; test-savefold-yafolding.el ends here
-
+;;; test-savefold-hide-ifdef.el ends here
